@@ -1,4 +1,4 @@
-module Dict exposing
+module MyDict exposing
   ( Dict
   , empty, singleton, insert, update, remove
   , isEmpty, member, get, size
