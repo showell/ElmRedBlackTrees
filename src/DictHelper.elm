@@ -77,7 +77,6 @@ listToDescription lst =
             stats.right
                 |> Maybe.map unboxStats
                 |> Maybe.map .color
-
     in
     case ( lColor, rColor ) of
         ( Nothing, Nothing ) ->
@@ -107,6 +106,7 @@ listToDescription lst =
                         |> subTree .left
                         |> subTree .left
                         |> .size
+
                 lrSize =
                     stats
                         |> subTree .left
@@ -208,15 +208,3 @@ toShapeTree internals =
                 top.color
                 (getSubTree "l")
                 (getSubTree "r")
-
-
-show =
-    let
-        internals =
-            [ 0, 1, 2, 3, 4 ]
-                |> listToDescription
-
-        x =
-            Debug.log "repr" internals
-    in
-    "see debugger"

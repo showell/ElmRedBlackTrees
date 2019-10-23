@@ -1,17 +1,21 @@
 module Main exposing (main)
 
 import Browser
-import DictHelper exposing (..)
-import Html
+import DictView exposing (..)
+
+
 
 -- MODEL / INIT
+
 
 type alias Model =
     { title : String
     }
 
-type Msg =
-    PlaceHolder
+
+type Msg
+    = PlaceHolder
+
 
 main : Program () Model Msg
 main =
@@ -42,6 +46,7 @@ update msg model =
     ( model, Cmd.none )
 
 
+
 -- SUBSCRIPTIONS
 
 
@@ -55,10 +60,7 @@ subscriptions _ =
 
 
 show =
-    DictHelper.show
-        |> Html.text
-        |> List.singleton
-        |> Html.pre []
+    DictView.show
 
 
 view : Model -> Browser.Document Msg
