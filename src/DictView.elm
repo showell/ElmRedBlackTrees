@@ -1,6 +1,7 @@
 module DictView exposing (show)
 
 import BinaryTree
+import Debug
 import DictHelper
     exposing
         ( DescribeTree(..)
@@ -18,6 +19,7 @@ import Html.Attributes
     exposing
         ( style
         )
+import TreeDiagram
 
 
 viewDescription : DescribeTree -> String
@@ -68,6 +70,10 @@ show =
                 |> String.fromInt
 
         cells stats =
+            let
+                x =
+                    Debug.log "diagram" (TreeDiagram.diagramData stats)
+            in
             [ size stats
             , height stats
             , viewDescription (statsToDescription stats)

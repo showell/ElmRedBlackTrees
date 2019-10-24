@@ -1,6 +1,7 @@
 module BinaryTree exposing
     ( BinaryTree(..)
     , height
+    , map
     , size
     , withDefault
     )
@@ -39,3 +40,13 @@ height tree =
 
         Empty ->
             0
+
+
+map : (v -> w) -> BinaryTree v -> BinaryTree w
+map f tree =
+    case tree of
+        Node v left right ->
+            Node (f v) (map f left) (map f right)
+
+        Empty ->
+            Empty
