@@ -52,7 +52,7 @@ emptyStatsInfo =
     { depth = 0
     , blackDepth = 0
     , size = 0
-    , color = "_"
+    , color = ""
     , sig = "_"
     }
 
@@ -92,10 +92,7 @@ listToDescription lst =
                     rData.size
             in
             case ( lColor, rColor ) of
-                ( "_", "_" ) ->
-                    Nada
-
-                ( "B", "_" ) ->
+                ( _, "" ) ->
                     Tree1 size
 
                 ( "B", "B" ) ->

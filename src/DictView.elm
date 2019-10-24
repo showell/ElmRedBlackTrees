@@ -5,56 +5,43 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-viewCounts : List Int -> String
-viewCounts counts =
-    counts
-        |> List.map String.fromInt
-        |> String.join ", "
-
-
 viewDescription : DescribeTree -> String
 viewDescription treeDesc =
-    let
-        s =
-            case treeDesc of
-                Tree1 count1 ->
-                    viewCounts [ count1 ]
+    case treeDesc of
+        Tree1 count1 ->
+            String.fromInt count1
 
-                Tree2 count1 count2 ->
-                    viewCounts [ count1, count2 ]
+        Tree2 count1 count2 ->
+            String.fromInt count1
+                ++ " "
+                ++ String.fromInt count2
 
-                Tree3 count1 count2 count3 ->
-                    viewCounts [ count1, count2, count3 ]
+        Tree3 count1 count2 count3 ->
+            String.fromInt count1
+                ++ " "
+                ++ String.fromInt count2
+                ++ " "
+                ++ String.fromInt count3
 
-                _ ->
-                    "not implemented"
-    in
-    s
+        Nada ->
+            "nada"
+
+        Broken ->
+            "broken"
 
 
 viewList : List Int -> String
 viewList lst =
-    let
-        min =
-            lst
-                |> List.minimum
-                |> Maybe.withDefault 0
-                |> String.fromInt
-
-        max =
-            lst
-                |> List.maximum
-                |> Maybe.withDefault 0
-                |> String.fromInt
-    in
-    min ++ ".." ++ max
+    lst
+        |> List.length
+        |> String.fromInt
 
 
 show =
     let
         lists : List (List Int)
         lists =
-            List.range 3 200
+            List.range 1 200
                 |> List.map (List.range 1)
 
         formatCell : String -> Html msg
