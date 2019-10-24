@@ -121,11 +121,17 @@ listToDescription lst =
                     Broken
 
 
-listToStats : List comparable -> StatsTree
-listToStats lst =
+listToDict : List comparable -> Dict comparable String
+listToDict lst =
     lst
         |> List.map (\k -> ( k, "" ))
         |> fromList
+
+
+listToStats : List comparable -> StatsTree
+listToStats lst =
+    lst
+        |> listToDict
         |> toInternalRepresentation
         |> toShapeTree
         |> shapeToStats

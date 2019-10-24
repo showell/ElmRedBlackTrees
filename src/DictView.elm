@@ -1,5 +1,6 @@
 module DictView exposing (..)
 
+import BinaryTree exposing (height)
 import DictHelper exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -44,6 +45,18 @@ show =
             List.range 1 200
                 |> List.map (List.range 1)
 
+        height lst =
+            lst
+                |> listToStats
+                |> BinaryTree.height
+                |> String.fromInt
+
+        cells lst =
+            [ viewList lst
+            , height lst
+            , viewDescription (listToDescription lst)
+            ]
+
         formatCell : String -> Html msg
         formatCell item =
             item
@@ -51,7 +64,6 @@ show =
                 |> List.singleton
                 |> td
                     [ style "padding-left" "10px"
-                    , style "text-align" "center"
                     ]
 
         formatRow : List String -> Html msg
@@ -61,9 +73,6 @@ show =
                 |> tr []
     in
     lists
-        |> List.map
-            (\lst ->
-                [ viewList lst, viewDescription (listToDescription lst) ]
-            )
+        |> List.map cells
         |> List.map formatRow
         |> table []
