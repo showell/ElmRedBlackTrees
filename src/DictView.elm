@@ -1,7 +1,6 @@
 module DictView exposing (show)
 
 import BinaryTree
-import Debug
 import DictHelper
     exposing
         ( DescribeTree(..)
@@ -11,6 +10,8 @@ import DictHelper
 import Html
     exposing
         ( Html
+        , button
+        , div
         , table
         , td
         , tr
@@ -19,11 +20,20 @@ import Html.Attributes
     exposing
         ( style
         )
+import Html.Events
+    exposing
+        ( onClick
+        )
 import TreeDiagram
+import Type
+    exposing
+        ( Model
+        , Msg(..)
+        )
 
 
-viewDescription : DescribeTree -> String
-viewDescription treeDesc =
+description : DescribeTree -> String
+description treeDesc =
     case treeDesc of
         Tree1 count1 ->
             String.fromInt count1
@@ -47,12 +57,33 @@ viewDescription treeDesc =
             "broken"
 
 
-show : Html msg
-show =
+show : Model -> Html Msg
+show model =
+    div [ style "display" "flex", style "flex-direction" "row" ]
+        [ div [] [ treeTable ]
+        , div [ style "max-width" "70%", style "padding" "20px" ] [ treeDiagram model.activeTreeSize ]
+        ]
+
+
+treeDiagram : Int -> Html Msg
+treeDiagram n =
+    let
+        stats =
+            List.range 1 n
+                |> listToStats
+    in
+    stats
+        |> TreeDiagram.diagramData
+        |> Debug.toString
+        |> Html.text
+
+
+treeTable : Html Msg
+treeTable =
     let
         lists : List (List Int)
         lists =
-            List.range 1 200
+            List.range 1 100
                 |> List.map (List.range 1)
 
         trees =
@@ -63,32 +94,37 @@ show =
             tree
                 |> BinaryTree.size
                 |> String.fromInt
+                |> Html.text
 
         height tree =
             tree
                 |> BinaryTree.height
                 |> String.fromInt
+                |> Html.text
+
+        getButton stats =
+            let
+                n =
+                    BinaryTree.size stats
+            in
+            button [ onClick (ShowTree n) ] [ Html.text "show" ]
 
         cells stats =
-            let
-                x =
-                    Debug.log "diagram" (TreeDiagram.diagramData stats)
-            in
             [ size stats
             , height stats
-            , viewDescription (statsToDescription stats)
+            , description (statsToDescription stats) |> Html.text
+            , getButton stats
             ]
 
-        formatCell : String -> Html msg
+        formatCell : Html msg -> Html msg
         formatCell item =
             item
-                |> Html.text
                 |> List.singleton
                 |> td
                     [ style "padding-left" "10px"
                     ]
 
-        formatRow : List String -> Html msg
+        formatRow : List (Html msg) -> Html msg
         formatRow items =
             items
                 |> List.map formatCell

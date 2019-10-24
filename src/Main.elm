@@ -1,20 +1,12 @@
 module Main exposing (main)
 
 import Browser
-import DictView exposing (..)
+import DictView exposing (show)
+import Type exposing (Model, Msg(..))
 
 
 
 -- MODEL / INIT
-
-
-type alias Model =
-    { title : String
-    }
-
-
-type Msg
-    = PlaceHolder
 
 
 main : Program () Model Msg
@@ -31,7 +23,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { title = "RedBlack Trees From Elm"
+            { activeTreeSize = 1
             }
     in
     ( model, Cmd.none )
@@ -43,7 +35,15 @@ init _ =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    let
+        model_ =
+            case msg of
+                ShowTree n ->
+                    { model
+                        | activeTreeSize = n
+                    }
+    in
+    ( model_, Cmd.none )
 
 
 
@@ -59,12 +59,8 @@ subscriptions _ =
 -- VIEW
 
 
-show =
-    DictView.show
-
-
 view : Model -> Browser.Document Msg
 view model =
-    { title = model.title
-    , body = [ show ]
+    { title = "RedBlack Trees from Elm"
+    , body = [ DictView.show model ]
     }
