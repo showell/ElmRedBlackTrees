@@ -1,5 +1,10 @@
 module DictHelper exposing (..)
 
+import BinaryTree
+    exposing
+        ( BinaryTree(..)
+        , withDefault
+        )
 import MyDict exposing (..)
 
 
@@ -15,21 +20,23 @@ type alias InternalNode k v =
     }
 
 
-type ShapeTree
-    = Node String ShapeTree ShapeTree
-    | Empty
-
-
-type StatsTree
-    = StatsTree
-        { depth : Int
-        , blackDepth : Int
-        , size : Int
-        , color : Color
-        , left : Maybe StatsTree
-        , right : Maybe StatsTree
-        , sig : String
+type alias ShapeTree =
+    BinaryTree
+        { color : String
         }
+
+
+type alias StatsInfo =
+    { depth : Int
+    , blackDepth : Int
+    , size : Int
+    , color : Color
+    , sig : String
+    }
+
+
+type alias StatsTree =
+    BinaryTree StatsInfo
 
 
 type DescribeTree
@@ -40,88 +47,81 @@ type DescribeTree
     | Tree3 Int Int Int
 
 
-emptyStatsTree : StatsTree
-emptyStatsTree =
-    StatsTree
-        { depth = 0
-        , blackDepth = 0
-        , size = 0
-        , color = "_"
-        , left = Nothing
-        , right = Nothing
-        , sig = "_"
-        }
-
-
-unboxStats (StatsTree stats) =
-    stats
+emptyStatsInfo : StatsInfo
+emptyStatsInfo =
+    { depth = 0
+    , blackDepth = 0
+    , size = 0
+    , color = "_"
+    , sig = "_"
+    }
 
 
 listToDescription lst =
     let
         stats =
-            listToStats lst |> unboxStats
-
-        subTree f tree =
-            tree
-                |> f
-                |> Maybe.withDefault emptyStatsTree
-                |> unboxStats
-
-        lColor =
-            stats.left
-                |> Maybe.map unboxStats
-                |> Maybe.map .color
-
-        rColor =
-            stats.right
-                |> Maybe.map unboxStats
-                |> Maybe.map .color
+            listToStats lst
     in
-    case ( lColor, rColor ) of
-        ( Nothing, Nothing ) ->
+    case stats of
+        Empty ->
             Nada
 
-        ( Just "B", Nothing ) ->
-            Tree1 stats.size
-
-        ( Just "B", Just "B" ) ->
+        Node data left right ->
             let
+                size =
+                    data.size
+
+                lData =
+                    left
+                        |> withDefault emptyStatsInfo
+
+                rData =
+                    right
+                        |> withDefault emptyStatsInfo
+
+                lColor =
+                    lData.color
+
+                rColor =
+                    rData.color
+
                 lSize =
-                    stats
-                        |> subTree .left
-                        |> .size
+                    rData.size
 
                 rSize =
-                    stats
-                        |> subTree .right
-                        |> .size
+                    rData.size
             in
-            Tree2 lSize rSize
+            case ( lColor, rColor ) of
+                ( "_", "_" ) ->
+                    Nada
 
-        ( Just "R", Just "B" ) ->
-            let
-                llSize =
-                    stats
-                        |> subTree .left
-                        |> subTree .left
-                        |> .size
+                ( "B", "_" ) ->
+                    Tree1 size
 
-                lrSize =
-                    stats
-                        |> subTree .left
-                        |> subTree .right
-                        |> .size
+                ( "B", "B" ) ->
+                    Tree2 lSize rSize
 
-                rSize =
-                    stats
-                        |> subTree .right
-                        |> .size
-            in
-            Tree3 llSize lrSize rSize
+                ( "R", "B" ) ->
+                    case left of
+                        Empty ->
+                            Broken
 
-        _ ->
-            Broken
+                        Node _ ll lr ->
+                            let
+                                llSize =
+                                    ll
+                                        |> withDefault emptyStatsInfo
+                                        |> .size
+
+                                lrSize =
+                                    lr
+                                        |> withDefault emptyStatsInfo
+                                        |> .size
+                            in
+                            Tree3 llSize lrSize rSize
+
+                _ ->
+                    Broken
 
 
 listToStats : List comparable -> StatsTree
@@ -138,45 +138,53 @@ shapeToStats : ShapeTree -> StatsTree
 shapeToStats shapeTree =
     case shapeTree of
         Empty ->
-            emptyStatsTree
+            Empty
 
-        Node color lShape rShape ->
+        Node data_ left_ right_ ->
             let
-                box stats =
-                    Just (StatsTree stats)
-
                 left =
-                    shapeToStats lShape |> unboxStats
+                    left_ |> shapeToStats
 
                 right =
-                    shapeToStats rShape |> unboxStats
+                    right_ |> shapeToStats
+
+                l =
+                    left
+                        |> withDefault emptyStatsInfo
+
+                r =
+                    right
+                        |> withDefault emptyStatsInfo
 
                 depth =
-                    1 + min left.depth right.depth
+                    1 + min l.depth r.depth
 
                 blackDepth =
-                    1 + left.blackDepth
+                    1 + l.blackDepth
 
                 size =
-                    1 + left.size + right.size
+                    1 + l.size + r.size
+
+                color =
+                    data_.color
 
                 sig =
                     color
                         ++ " ("
-                        ++ left.sig
+                        ++ l.sig
                         ++ ", "
-                        ++ right.sig
+                        ++ r.sig
                         ++ ")"
+
+                data =
+                    { depth = depth
+                    , blackDepth = blackDepth
+                    , size = size
+                    , color = color
+                    , sig = sig
+                    }
             in
-            StatsTree
-                { depth = depth
-                , blackDepth = blackDepth
-                , size = size
-                , color = color
-                , left = box left
-                , right = box right
-                , sig = sig
-                }
+            Node data left right
 
 
 toShapeTree : List (InternalNode k v) -> ShapeTree
@@ -203,8 +211,9 @@ toShapeTree internals =
                         |> List.filter (\node -> String.left 1 node.path == dir)
                         |> List.map slicePath
                         |> toShapeTree
+
+                data =
+                    { color = top.color
+                    }
             in
-            Node
-                top.color
-                (getSubTree "l")
-                (getSubTree "r")
+            Node data (getSubTree "l") (getSubTree "r")
