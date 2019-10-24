@@ -1,6 +1,7 @@
 module BinaryTree exposing
     ( BinaryTree(..)
     , height
+    , size
     , withDefault
     )
 
@@ -18,6 +19,16 @@ withDefault default tree =
 
         Empty ->
             default
+
+
+size : BinaryTree v -> Int
+size tree =
+    case tree of
+        Node _ left right ->
+            1 + size left + size right
+
+        Empty ->
+            0
 
 
 height : BinaryTree v -> Int

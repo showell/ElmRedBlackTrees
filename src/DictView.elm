@@ -31,13 +31,6 @@ viewDescription treeDesc =
             "broken"
 
 
-viewList : List Int -> String
-viewList lst =
-    lst
-        |> List.length
-        |> String.fromInt
-
-
 show =
     let
         lists : List (List Int)
@@ -45,16 +38,24 @@ show =
             List.range 1 200
                 |> List.map (List.range 1)
 
-        height lst =
-            lst
-                |> listToStats
+        trees =
+            lists
+                |> List.map listToStats
+
+        size tree =
+            tree
+                |> BinaryTree.size
+                |> String.fromInt
+
+        height tree =
+            tree
                 |> BinaryTree.height
                 |> String.fromInt
 
-        cells lst =
-            [ viewList lst
-            , height lst
-            , viewDescription (listToDescription lst)
+        cells stats =
+            [ size stats
+            , height stats
+            , viewDescription (statsToDescription stats)
             ]
 
         formatCell : String -> Html msg
@@ -72,7 +73,7 @@ show =
                 |> List.map formatCell
                 |> tr []
     in
-    lists
+    trees
         |> List.map cells
         |> List.map formatRow
         |> table []

@@ -57,11 +57,7 @@ emptyStatsInfo =
     }
 
 
-listToDescription lst =
-    let
-        stats =
-            listToStats lst
-    in
+statsToDescription stats =
     case stats of
         Empty ->
             Nada
