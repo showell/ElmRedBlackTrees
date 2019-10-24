@@ -66,9 +66,8 @@ diagramData tree =
                             leftEdges ++ rightEdges
 
                         newCoordNodes =
-                            leftDiagram.coordNodes
-                                ++ [ topCoordNode ]
-                                ++ rightDiagram.coordNodes
+                            topCoordNode
+                                :: (leftDiagram.coordNodes ++ rightDiagram.coordNodes)
                     in
                     { coordNodes = newCoordNodes
                     , edges = newEdges
