@@ -69,17 +69,17 @@ that lets you look up a `String` (such as user names) and find the associated
 
     users : Dict String User
     users =
-      Dict.fromList
-        [ ("Alice", User "Alice" 28 1.65)
-        , ("Bob"  , User "Bob"   19 1.82)
-        , ("Chuck", User "Chuck" 33 1.75)
-        ]
+        Dict.fromList
+            [ ( "Alice", User "Alice" 28 1.65 )
+            , ( "Bob", User "Bob" 19 1.82 )
+            , ( "Chuck", User "Chuck" 33 1.75 )
+            ]
 
     type alias User =
-      { name : String
-      , age : Int
-      , height : Float
-      }
+        { name : String
+        , age : Int
+        , height : Float
+        }
 
 -}
 type Dict k v
@@ -620,7 +620,7 @@ partition isGood dict =
 
 {-| Get all of the keys in a dictionary, sorted from lowest to highest.
 
-    keys (fromList [(0,"Alice"),(1,"Bob")]) == [0,1]
+    keys (fromList [ ( 0, "Alice" ), ( 1, "Bob" ) ]) == [ 0, 1 ]
 
 -}
 keys : Dict k v -> List k
@@ -630,7 +630,7 @@ keys dict =
 
 {-| Get all of the values in a dictionary, in the order of their keys.
 
-    values (fromList [(0,"Alice"),(1,"Bob")]) == ["Alice", "Bob"]
+    values (fromList [ ( 0, "Alice" ), ( 1, "Bob" ) ]) == [ "Alice", "Bob" ]
 
 -}
 values : Dict k v -> List v
