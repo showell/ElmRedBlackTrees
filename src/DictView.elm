@@ -1,9 +1,23 @@
-module DictView exposing (..)
+module DictView exposing (show)
 
-import BinaryTree exposing (height)
-import DictHelper exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import BinaryTree
+import DictHelper
+    exposing
+        ( DescribeTree(..)
+        , listToStats
+        , statsToDescription
+        )
+import Html
+    exposing
+        ( Html
+        , table
+        , td
+        , tr
+        )
+import Html.Attributes
+    exposing
+        ( style
+        )
 
 
 viewDescription : DescribeTree -> String
@@ -31,6 +45,7 @@ viewDescription treeDesc =
             "broken"
 
 
+show : Html msg
 show =
     let
         lists : List (List Int)

@@ -1,11 +1,20 @@
-module DictHelper exposing (..)
+module DictHelper exposing
+    ( DescribeTree(..)
+    , listToStats
+    , statsToDescription
+    )
 
 import BinaryTree
     exposing
         ( BinaryTree(..)
         , withDefault
         )
-import MyDict exposing (..)
+import MyDict
+    exposing
+        ( Dict
+        , fromList
+        , toInternalRepresentation
+        )
 
 
 type alias Color =
@@ -57,6 +66,7 @@ emptyStatsInfo =
     }
 
 
+statsToDescription : StatsTree -> DescribeTree
 statsToDescription stats =
     case stats of
         Empty ->
