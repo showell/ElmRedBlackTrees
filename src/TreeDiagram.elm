@@ -1,4 +1,4 @@
-module TreeDiagram exposing (diagramView, diagramData)
+module TreeDiagram exposing (diagramData, diagramView)
 
 import BinaryTree
     exposing
@@ -10,6 +10,7 @@ import Html
         )
 import Svg
 import Svg.Attributes
+
 
 type alias CoordNode v =
     { coord : ( Int, Int )
@@ -27,6 +28,7 @@ type alias DiagramData v =
     { coordNodes : List (CoordNode v)
     , edges : List (Edge v)
     }
+
 
 diagramView : BinaryTree v -> Html msg
 diagramView tree =
@@ -58,16 +60,17 @@ diagramView tree =
                 , Svg.Attributes.cy (String.fromFloat cy)
                 , Svg.Attributes.r (String.fromFloat r)
                 , Svg.Attributes.fill fill
-                ] []
+                ]
+                []
 
         drawNodes : Html msg
         drawNodes =
             data.coordNodes
                 |> List.map drawNode
                 |> Svg.svg []
-
     in
     drawNodes
+
 
 diagramData : BinaryTree v -> DiagramData v
 diagramData tree =
