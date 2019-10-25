@@ -2,6 +2,7 @@ module DictHelper exposing
     ( DescribeTree(..)
     , StatsInfo
     , StatsTree
+    , dictToStats
     , listToStats
     , statsToDescription
     )
@@ -136,13 +137,19 @@ listToDict lst =
         |> fromList
 
 
+dictToStats : Dict comparable v -> StatsTree
+dictToStats dct =
+    dct
+        |> toInternalRepresentation
+        |> toShapeTree
+        |> shapeToStats
+
+
 listToStats : List comparable -> StatsTree
 listToStats lst =
     lst
         |> listToDict
-        |> toInternalRepresentation
-        |> toShapeTree
-        |> shapeToStats
+        |> dictToStats
 
 
 shapeToStats : ShapeTree -> StatsTree

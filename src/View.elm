@@ -6,7 +6,7 @@ import DictHelper
         ( DescribeTree(..)
         , StatsInfo
         , StatsTree
-        , listToStats
+        , dictToStats
         , statsToDescription
         )
 import Html
@@ -27,30 +27,33 @@ import Html.Events
     exposing
         ( onClick
         )
+import RangeList
 import TreeDiagram
 import Type
     exposing
-        ( Model
+        ( InsertionMode(..)
+        , Model
         , Msg(..)
+        , RangeSpec
         )
 
 
 view : Model -> Html Msg
 view model =
     let
-        n =
-            model.activeTreeSize
+        rangeSpec =
+            model.rangeSpec
 
         leftSide =
-            [ treeTable n
+            [ treeTable rangeSpec
             ]
 
         rightSide =
-            [ diagramHeading n
-            , plusMinusButtons n
+            [ diagramHeading rangeSpec
+            , plusMinusButtons rangeSpec
             ]
-                ++ subTreeButtons n
-                ++ [ treeDiagram n
+                ++ subTreeButtons rangeSpec
+                ++ [ treeDiagram rangeSpec
                    ]
 
         leftCss =
@@ -70,44 +73,51 @@ view model =
         ]
 
 
-diagramHeading : Int -> Html Msg
-diagramHeading n =
-    div
-        [ style "font-size" "120%"
-        , style "padding" "5px"
+diagramHeading : RangeSpec -> Html Msg
+diagramHeading spec =
+    div []
+        [ div
+            [ style "font-size" "120%"
+            , style "padding" "5px"
+            ]
+            [ Html.text "RedBlack tree for "
+            , Html.b [] [ Html.text (String.fromInt spec.n) ]
+            , Html.text " elements"
+            ]
+        , div [ style "padding" "5px" ]
+            [ Html.text (RangeList.toString spec)
+            , button [ onClick (ShowTree (RangeList.flip spec)) ] [ Html.text "flip" ]
+            ]
         ]
-        [ Html.text "RedBlack tree for "
-        , Html.b [] [ Html.text (String.fromInt n) ]
-        , Html.text " elements"
-        ]
 
 
-showTreeButton : Int -> String -> Html Msg
-showTreeButton n label =
-    button [ onClick (ShowTree n) ] [ Html.text label ]
+showTreeButton : RangeSpec -> String -> Html Msg
+showTreeButton spec label =
+    button [ onClick (ShowTree spec) ] [ Html.text label ]
 
 
-showTreeNumButton : Int -> Html Msg
-showTreeNumButton n =
-    showTreeButton n (String.fromInt n)
+showTreeNumButton : RangeSpec -> Html Msg
+showTreeNumButton spec =
+    showTreeButton spec (String.fromInt spec.n)
 
 
-plusMinusButtons : Int -> Html Msg
-plusMinusButtons nCurrent =
+plusMinusButtons : RangeSpec -> Html Msg
+plusMinusButtons spec =
     let
         lessButtons =
-            if nCurrent == 1 then
+            if spec.n == 1 then
                 []
 
             else
-                [ showTreeButton (nCurrent - 1) "less" ]
+                [ showTreeButton (RangeList.decr spec) "less" ]
 
         moreButtons =
             -- We don't limit this
-            [ showTreeButton (nCurrent + 1) "more" ]
+            [ showTreeButton (RangeList.incr spec) "more" ]
 
         cannedButtons =
             [ 3, 7, 15, 31, 63 ]
+                |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
 
         buttons =
@@ -164,12 +174,13 @@ arithmeticBreakdown treeDesc =
             ""
 
 
-subTreeButtons : Int -> List (Html Msg)
-subTreeButtons n =
+subTreeButtons : RangeSpec -> List (Html Msg)
+subTreeButtons spec =
     let
         treeDesc =
-            List.range 1 n
-                |> listToStats
+            spec
+                |> RangeList.toDict
+                |> dictToStats
                 |> statsToDescription
 
         counts =
@@ -188,6 +199,7 @@ subTreeButtons n =
 
         buttons =
             counts
+                |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
     in
     if List.isEmpty buttons then
@@ -212,27 +224,33 @@ getNodeColor statsNode =
             "yellow"
 
 
-treeDiagram : Int -> Html Msg
-treeDiagram n =
-    let
-        stats =
-            List.range 1 n
-                |> listToStats
-    in
-    stats
+specToStats : RangeSpec -> StatsTree
+specToStats spec =
+    spec
+        |> RangeList.toDict
+        |> dictToStats
+
+
+treeDiagram : RangeSpec -> Html Msg
+treeDiagram spec =
+    spec
+        |> specToStats
         |> TreeDiagram.diagramView getNodeColor
 
 
-treeTable : Int -> Html Msg
-treeTable activeTreeSize =
+treeTable : RangeSpec -> Html Msg
+treeTable currSpec =
     let
-        listTups =
-            List.range 1 63
-                |> List.map (\n -> ( n, List.range 1 n ))
+        insertionMode =
+            currSpec.insertionMode
 
-        treeTups =
-            listTups
-                |> List.map (\( n, list ) -> ( n, listToStats list ))
+        allSpecs =
+            List.range 1 63
+                |> List.map (\n -> { n = n, insertionMode = insertionMode })
+
+        specStatTups =
+            allSpecs
+                |> List.map (\spec -> ( spec, specToStats spec ))
 
         size tree =
             tree
@@ -246,11 +264,11 @@ treeTable activeTreeSize =
                 |> String.fromInt
                 |> Html.text
 
-        cells n stats =
+        cells spec stats =
             [ size stats
             , height stats
             , description (statsToDescription stats) |> Html.text
-            , showTreeButton n "show"
+            , showTreeButton spec "show"
             ]
 
         header s =
@@ -275,22 +293,21 @@ treeTable activeTreeSize =
                     , style "text-align" "center"
                     ]
 
-        formatRow : ( Int, StatsTree ) -> Html Msg
-        formatRow ( n, stats ) =
+        formatRow : ( RangeSpec, StatsTree ) -> Html Msg
+        formatRow ( spec, stats ) =
             let
                 css =
-                    if n == activeTreeSize then
+                    if spec.n == currSpec.n then
                         [ style "background" "lightgreen"
                         ]
 
                     else
                         []
             in
-            stats
-                |> cells n
+            cells spec stats
                 |> List.map formatCell
                 |> tr css
     in
-    treeTups
+    specStatTups
         |> List.map formatRow
         |> (\rows -> table [] (headerRow :: rows))

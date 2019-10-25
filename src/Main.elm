@@ -1,7 +1,12 @@
 module Main exposing (main)
 
 import Browser
-import Type exposing (Model, Msg(..))
+import Type
+    exposing
+        ( InsertionMode(..)
+        , Model
+        , Msg(..)
+        )
 import View exposing (view)
 
 
@@ -22,8 +27,13 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
+        rangeSpec =
+            { n = 10
+            , insertionMode = InsertForward
+            }
+
         model =
-            { activeTreeSize = 15
+            { rangeSpec = rangeSpec
             }
     in
     ( model, Cmd.none )
@@ -38,9 +48,9 @@ update msg model =
     let
         model_ =
             case msg of
-                ShowTree n ->
+                ShowTree rangeSpec ->
                     { model
-                        | activeTreeSize = n
+                        | rangeSpec = rangeSpec
                     }
     in
     ( model_, Cmd.none )
