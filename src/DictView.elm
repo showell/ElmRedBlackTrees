@@ -73,9 +73,7 @@ treeDiagram n =
                 |> listToStats
     in
     stats
-        |> TreeDiagram.diagramData
-        |> Debug.toString
-        |> Html.text
+        |> TreeDiagram.diagramView
 
 
 treeTable : Html Msg
