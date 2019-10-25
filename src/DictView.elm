@@ -120,6 +120,7 @@ treeTable =
                 |> List.singleton
                 |> td
                     [ style "padding-left" "10px"
+                    , style "white-space" "nowrap"
                     ]
 
         formatRow : List (Html msg) -> Html msg
