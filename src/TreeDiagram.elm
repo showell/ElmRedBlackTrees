@@ -33,6 +33,16 @@ type alias DiagramData v =
 diagramView : BinaryTree v -> Html msg
 diagramView tree =
     let
+        size =
+            BinaryTree.size tree
+                |> toFloat
+
+        w =
+            300.0 / (size + 2)
+
+        r =
+            w / 4.0
+
         data : DiagramData v
         data =
             diagramData tree
@@ -43,14 +53,11 @@ diagramView tree =
                 ( x, y ) =
                     coordNode.coord
 
-                r =
-                    5.0
-
                 cx =
-                    15.0 * toFloat x + r
+                    w * toFloat x + r
 
                 cy =
-                    15.0 * toFloat y + r
+                    w * toFloat y + r
 
                 fill =
                     "blue"
@@ -67,7 +74,7 @@ diagramView tree =
         drawNodes =
             data.coordNodes
                 |> List.map drawNode
-                |> Svg.svg []
+                |> Svg.svg [ Svg.Attributes.width "100%" ]
     in
     drawNodes
 

@@ -65,9 +65,15 @@ show model =
 
         rightSide =
             treeDiagram model.activeTreeSize
+
+        leftCss =
+            [ style "height" "100vh"
+            , style "overflow-y" "auto"
+            , style "padding-right" "100px"
+            ]
     in
     div [ style "display" "flex", style "flex-direction" "row" ]
-        [ div [] [ leftSide ]
+        [ div leftCss [ leftSide ]
         , div [ style "padding" "20px" ] [ rightSide ]
         ]
 
