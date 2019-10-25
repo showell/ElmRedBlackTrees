@@ -33,6 +33,10 @@ type alias DiagramData v =
 diagramView : BinaryTree v -> Html msg
 diagramView tree =
     let
+        data : DiagramData v
+        data =
+            diagramData tree
+
         size =
             BinaryTree.size tree
                 |> toFloat
@@ -43,21 +47,44 @@ diagramView tree =
         r =
             w / 4.0
 
-        data : DiagramData v
-        data =
-            diagramData tree
-
-        drawNode : CoordNode v -> Html msg
-        drawNode coordNode =
+        scaleCoord ( x, y ) =
             let
-                ( x, y ) =
-                    coordNode.coord
-
-                cx =
+                xx =
                     w * toFloat x + r
 
-                cy =
+                yy =
                     w * toFloat y + r
+            in
+            ( xx, yy )
+
+        drawEdge : Edge v -> Html msg
+        drawEdge edge =
+            let
+                ( x1, y1 ) =
+                    scaleCoord edge.parent.coord
+
+                ( x2, y2 ) =
+                    scaleCoord edge.child.coord
+            in
+            Svg.line
+                [ Svg.Attributes.x1 (String.fromFloat x1)
+                , Svg.Attributes.y1 (String.fromFloat y1)
+                , Svg.Attributes.x2 (String.fromFloat x2)
+                , Svg.Attributes.y2 (String.fromFloat y2)
+                , Svg.Attributes.stroke "gray"
+                ]
+                []
+
+        drawEdges : List (Html msg)
+        drawEdges =
+            data.edges
+                |> List.map drawEdge
+
+        drawCoordNode : CoordNode v -> Html msg
+        drawCoordNode coordNode =
+            let
+                ( cx, cy ) =
+                    scaleCoord coordNode.coord
 
                 fill =
                     "blue"
@@ -70,13 +97,14 @@ diagramView tree =
                 ]
                 []
 
-        drawNodes : Html msg
-        drawNodes =
+        drawCoordNodes : List (Html msg)
+        drawCoordNodes =
             data.coordNodes
-                |> List.map drawNode
-                |> Svg.svg [ Svg.Attributes.width "100%" ]
+                |> List.map drawCoordNode
     in
-    drawNodes
+    drawEdges
+        ++ drawCoordNodes
+        |> Svg.svg [ Svg.Attributes.width "100%" ]
 
 
 diagramData : BinaryTree v -> DiagramData v
