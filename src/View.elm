@@ -38,15 +38,20 @@ import Type
 view : Model -> Html Msg
 view model =
     let
+        n =
+            model.activeTreeSize
+
         leftSide =
-            [ treeTable model.activeTreeSize
+            [ treeTable n
             ]
 
         rightSide =
-            [ diagramHeading model.activeTreeSize
-            , plusMinusButtons model.activeTreeSize
-            , treeDiagram model.activeTreeSize
+            [ diagramHeading n
+            , plusMinusButtons n
             ]
+                ++ subTreeButtons n
+                ++ [ treeDiagram n
+                   ]
 
         leftCss =
             [ style "height" "100vh"
@@ -77,26 +82,31 @@ diagramHeading n =
         ]
 
 
+showTreeButton n label =
+    button [ onClick (ShowTree n) ] [ Html.text label ]
+
+
+showTreeNumButton n =
+    showTreeButton n (String.fromInt n)
+
+
 plusMinusButtons : Int -> Html Msg
 plusMinusButtons nCurrent =
     let
-        makeButton n label =
-            button [ onClick (ShowTree n) ] [ Html.text label ]
-
         lessButtons =
             if nCurrent == 1 then
                 []
 
             else
-                [ makeButton (nCurrent - 1) "less" ]
+                [ showTreeButton (nCurrent - 1) "less" ]
 
         moreButtons =
             -- We don't limit this
-            [ makeButton (nCurrent + 1) "more" ]
+            [ showTreeButton (nCurrent + 1) "more" ]
 
         cannedButtons =
             [ 3, 7, 15, 31, 63 ]
-                |> List.map (\n -> makeButton n (String.fromInt n))
+                |> List.map showTreeNumButton
 
         buttons =
             lessButtons ++ moreButtons ++ cannedButtons
@@ -127,6 +137,64 @@ description treeDesc =
 
         Broken ->
             "broken"
+
+
+arithmeticBreakdown : DescribeTree -> String
+arithmeticBreakdown treeDesc =
+    case treeDesc of
+        Tree2 n1 n2 ->
+            String.fromInt (n1 + n2 + 1)
+                ++ " = "
+                ++ String.fromInt n1
+                ++ " + 1 + "
+                ++ String.fromInt n2
+
+        Tree3 n1 n2 n3 ->
+            String.fromInt (n1 + n2 + n3 + 2)
+                ++ " = "
+                ++ String.fromInt n1
+                ++ " + 1 + "
+                ++ String.fromInt n2
+                ++ " + 1 + "
+                ++ String.fromInt n3
+
+        _ ->
+            ""
+
+
+subTreeButtons : Int -> List (Html Msg)
+subTreeButtons n =
+    let
+        treeDesc =
+            List.range 1 n
+                |> listToStats
+                |> statsToDescription
+
+        counts =
+            case treeDesc of
+                Tree1 n1 ->
+                    [ n1 ]
+
+                Tree2 n1 n2 ->
+                    [ n1, n2 ]
+
+                Tree3 n1 n2 n3 ->
+                    [ n1, n2, n3 ]
+
+                _ ->
+                    []
+
+        buttons =
+            counts
+                |> List.map showTreeNumButton
+    in
+    if List.isEmpty buttons then
+        []
+
+    else
+        [ Html.text "Subtrees: " ]
+            ++ buttons
+            ++ [ div [] [ Html.text (arithmeticBreakdown treeDesc) ] ]
 
 
 getNodeColor : StatsInfo -> String
@@ -176,14 +244,11 @@ treeTable activeTreeSize =
                 |> String.fromInt
                 |> Html.text
 
-        getButton n =
-            button [ onClick (ShowTree n) ] [ Html.text "show" ]
-
         cells n stats =
             [ size stats
             , height stats
             , description (statsToDescription stats) |> Html.text
-            , getButton n
+            , showTreeButton n "show"
             ]
 
         header s =
