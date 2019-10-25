@@ -39,10 +39,14 @@ view : Model -> Html Msg
 view model =
     let
         leftSide =
-            treeTable model.activeTreeSize
+            [ treeTable model.activeTreeSize
+            ]
 
         rightSide =
-            treeDiagram model.activeTreeSize
+            [ diagramHeading model.activeTreeSize
+            , plusMinusButtons model.activeTreeSize
+            , treeDiagram model.activeTreeSize
+            ]
 
         leftCss =
             [ style "height" "100vh"
@@ -56,9 +60,48 @@ view model =
             ]
     in
     div [ style "display" "flex", style "flex-direction" "row" ]
-        [ div leftCss [ leftSide ]
-        , div rightCss [ rightSide ]
+        [ div leftCss leftSide
+        , div rightCss rightSide
         ]
+
+
+diagramHeading : Int -> Html Msg
+diagramHeading n =
+    div
+        [ style "font-size" "120%"
+        , style "padding" "5px"
+        ]
+        [ Html.text "RedBlack tree for "
+        , Html.b [] [ Html.text (String.fromInt n) ]
+        , Html.text " elements"
+        ]
+
+
+plusMinusButtons : Int -> Html Msg
+plusMinusButtons nCurrent =
+    let
+        makeButton n label =
+            button [ onClick (ShowTree n) ] [ Html.text label ]
+
+        lessButtons =
+            if nCurrent == 1 then
+                []
+
+            else
+                [ makeButton (nCurrent - 1) "less" ]
+
+        moreButtons =
+            -- We don't limit this
+            [ makeButton (nCurrent + 1) "more" ]
+
+        cannedButtons =
+            [ 3, 7, 15, 31, 63 ]
+                |> List.map (\n -> makeButton n (String.fromInt n))
+
+        buttons =
+            lessButtons ++ moreButtons ++ cannedButtons
+    in
+    div [] buttons
 
 
 description : DescribeTree -> String
@@ -133,18 +176,14 @@ treeTable activeTreeSize =
                 |> String.fromInt
                 |> Html.text
 
-        getButton stats =
-            let
-                n =
-                    BinaryTree.size stats
-            in
+        getButton n =
             button [ onClick (ShowTree n) ] [ Html.text "show" ]
 
-        cells stats =
+        cells n stats =
             [ size stats
             , height stats
             , description (statsToDescription stats) |> Html.text
-            , getButton stats
+            , getButton n
             ]
 
         header s =
@@ -181,7 +220,7 @@ treeTable activeTreeSize =
                         []
             in
             stats
-                |> cells
+                |> cells n
                 |> List.map formatCell
                 |> tr css
     in
