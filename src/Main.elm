@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import DictView exposing (show)
 import Type exposing (Model, Msg(..))
+import View exposing (view)
 
 
 
@@ -62,5 +62,5 @@ subscriptions _ =
 view : Model -> Browser.Document Msg
 view model =
     { title = "RedBlack Trees from Elm"
-    , body = [ DictView.show model ]
+    , body = [ View.view model ]
     }

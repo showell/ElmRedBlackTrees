@@ -1,4 +1,4 @@
-module DictView exposing (show)
+module View exposing (view)
 
 import BinaryTree
 import DictHelper
@@ -34,6 +34,32 @@ import Type
         )
 
 
+view : Model -> Html Msg
+view model =
+    let
+        leftSide =
+            treeTable
+
+        rightSide =
+            treeDiagram model.activeTreeSize
+
+        leftCss =
+            [ style "height" "100vh"
+            , style "overflow-y" "auto"
+            , style "padding-right" "100px"
+            , style "min-width" "200px"
+            ]
+
+        rightCss =
+            [ style "padding" "20px"
+            ]
+    in
+    div [ style "display" "flex", style "flex-direction" "row" ]
+        [ div leftCss [ leftSide ]
+        , div rightCss [ rightSide ]
+        ]
+
+
 description : DescribeTree -> String
 description treeDesc =
     case treeDesc of
@@ -57,32 +83,6 @@ description treeDesc =
 
         Broken ->
             "broken"
-
-
-show : Model -> Html Msg
-show model =
-    let
-        leftSide =
-            treeTable
-
-        rightSide =
-            treeDiagram model.activeTreeSize
-
-        leftCss =
-            [ style "height" "100vh"
-            , style "overflow-y" "auto"
-            , style "padding-right" "100px"
-            , style "min-width" "200px"
-            ]
-
-        rightCss =
-            [ style "padding" "20px"
-            ]
-    in
-    div [ style "display" "flex", style "flex-direction" "row" ]
-        [ div leftCss [ leftSide ]
-        , div rightCss [ rightSide ]
-        ]
 
 
 getNodeColor : StatsInfo -> String
