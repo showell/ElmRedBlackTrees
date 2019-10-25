@@ -42,10 +42,13 @@ diagramView getNodeColor tree =
                 |> toFloat
 
         w =
-            300.0 / (size + 2)
+            100.0 / (size + 2)
 
         r =
-            w / 4.0
+            w / 2.5
+
+        strokeWidth =
+            r / 5.0
 
         scaleCoord ( x, y ) =
             let
@@ -65,13 +68,17 @@ diagramView getNodeColor tree =
 
                 ( x2, y2 ) =
                     scaleCoord edge.child.coord
+
+                stroke =
+                    "gray"
             in
             Svg.line
                 [ Svg.Attributes.x1 (String.fromFloat x1)
                 , Svg.Attributes.y1 (String.fromFloat y1)
                 , Svg.Attributes.x2 (String.fromFloat x2)
                 , Svg.Attributes.y2 (String.fromFloat y2)
-                , Svg.Attributes.stroke "gray"
+                , Svg.Attributes.stroke stroke
+                , Svg.Attributes.strokeWidth (String.fromFloat strokeWidth)
                 ]
                 []
 
@@ -104,7 +111,10 @@ diagramView getNodeColor tree =
     in
     drawEdges
         ++ drawCoordNodes
-        |> Svg.svg [ Svg.Attributes.width "100%" ]
+        |> Svg.svg
+            [ Svg.Attributes.width "100%"
+            , Svg.Attributes.viewBox "0 0 100 75"
+            ]
 
 
 diagramData : BinaryTree v -> DiagramData v

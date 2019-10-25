@@ -71,11 +71,16 @@ show model =
             [ style "height" "100vh"
             , style "overflow-y" "auto"
             , style "padding-right" "100px"
+            , style "min-width" "200px"
+            ]
+
+        rightCss =
+            [ style "padding" "20px"
             ]
     in
     div [ style "display" "flex", style "flex-direction" "row" ]
         [ div leftCss [ leftSide ]
-        , div [ style "padding" "20px" ] [ rightSide ]
+        , div rightCss [ rightSide ]
         ]
 
 
