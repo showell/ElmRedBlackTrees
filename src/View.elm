@@ -5,6 +5,7 @@ import DictHelper
     exposing
         ( DescribeTree(..)
         , StatsInfo
+        , StatsTree
         , listToStats
         , statsToDescription
         )
@@ -38,7 +39,7 @@ view : Model -> Html Msg
 view model =
     let
         leftSide =
-            treeTable
+            treeTable model.activeTreeSize
 
         rightSide =
             treeDiagram model.activeTreeSize
@@ -109,17 +110,16 @@ treeDiagram n =
         |> TreeDiagram.diagramView getNodeColor
 
 
-treeTable : Html Msg
-treeTable =
+treeTable : Int -> Html Msg
+treeTable activeTreeSize =
     let
-        lists : List (List Int)
-        lists =
+        listTups =
             List.range 1 63
-                |> List.map (List.range 1)
+                |> List.map (\n -> ( n, List.range 1 n ))
 
-        trees =
-            lists
-                |> List.map listToStats
+        treeTups =
+            listTups
+                |> List.map (\( n, list ) -> ( n, listToStats list ))
 
         size tree =
             tree
@@ -169,13 +169,22 @@ treeTable =
                     , style "text-align" "center"
                     ]
 
-        formatRow : List (Html msg) -> Html msg
-        formatRow items =
-            items
+        formatRow : ( Int, StatsTree ) -> Html Msg
+        formatRow ( n, stats ) =
+            let
+                css =
+                    if n == activeTreeSize then
+                        [ style "background" "lightgreen"
+                        ]
+
+                    else
+                        []
+            in
+            stats
+                |> cells
                 |> List.map formatCell
-                |> tr []
+                |> tr css
     in
-    trees
-        |> List.map cells
+    treeTups
         |> List.map formatRow
         |> (\rows -> table [] (headerRow :: rows))
