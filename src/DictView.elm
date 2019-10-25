@@ -94,7 +94,7 @@ treeTable =
     let
         lists : List (List Int)
         lists =
-            List.range 1 100
+            List.range 1 63
                 |> List.map (List.range 1)
 
         trees =

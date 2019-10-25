@@ -23,7 +23,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         model =
-            { activeTreeSize = 1
+            { activeTreeSize = 15
             }
     in
     ( model, Cmd.none )
