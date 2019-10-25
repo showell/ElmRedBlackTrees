@@ -82,10 +82,12 @@ diagramHeading n =
         ]
 
 
+showTreeButton : Int -> String -> Html Msg
 showTreeButton n label =
     button [ onClick (ShowTree n) ] [ Html.text label ]
 
 
+showTreeNumButton : Int -> Html Msg
 showTreeNumButton n =
     showTreeButton n (String.fromInt n)
 
@@ -192,8 +194,8 @@ subTreeButtons n =
         []
 
     else
-        [ Html.text "Subtrees: " ]
-            ++ buttons
+        Html.text "Subtrees: "
+            :: buttons
             ++ [ div [] [ Html.text (arithmeticBreakdown treeDesc) ] ]
 
 
