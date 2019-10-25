@@ -59,9 +59,16 @@ description treeDesc =
 
 show : Model -> Html Msg
 show model =
+    let
+        leftSide =
+            treeTable
+
+        rightSide =
+            treeDiagram model.activeTreeSize
+    in
     div [ style "display" "flex", style "flex-direction" "row" ]
-        [ div [] [ treeTable ]
-        , div [ style "max-width" "70%", style "padding" "20px" ] [ treeDiagram model.activeTreeSize ]
+        [ div [] [ leftSide ]
+        , div [ style "padding" "20px" ] [ rightSide ]
         ]
 
 
