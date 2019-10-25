@@ -4,6 +4,7 @@ import BinaryTree
 import DictHelper
     exposing
         ( DescribeTree(..)
+        , StatsInfo
         , listToStats
         , statsToDescription
         )
@@ -78,6 +79,19 @@ show model =
         ]
 
 
+getNodeColor : StatsInfo -> String
+getNodeColor statsNode =
+    case statsNode.color of
+        "R" ->
+            "red"
+
+        "B" ->
+            "black"
+
+        _ ->
+            "yellow"
+
+
 treeDiagram : Int -> Html Msg
 treeDiagram n =
     let
@@ -86,7 +100,7 @@ treeDiagram n =
                 |> listToStats
     in
     stats
-        |> TreeDiagram.diagramView
+        |> TreeDiagram.diagramView getNodeColor
 
 
 treeTable : Html Msg

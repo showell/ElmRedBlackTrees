@@ -1,5 +1,6 @@
 module DictHelper exposing
     ( DescribeTree(..)
+    , StatsInfo
     , listToStats
     , statsToDescription
     )

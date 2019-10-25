@@ -30,8 +30,8 @@ type alias DiagramData v =
     }
 
 
-diagramView : BinaryTree v -> Html msg
-diagramView tree =
+diagramView : (v -> String) -> BinaryTree v -> Html msg
+diagramView getNodeColor tree =
     let
         data : DiagramData v
         data =
@@ -87,7 +87,7 @@ diagramView tree =
                     scaleCoord coordNode.coord
 
                 fill =
-                    "blue"
+                    getNodeColor coordNode.data
             in
             Svg.circle
                 [ Svg.Attributes.cx (String.fromFloat cx)
