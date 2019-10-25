@@ -15,6 +15,7 @@ import Html
         , div
         , table
         , td
+        , th
         , tr
         )
 import Html.Attributes
@@ -146,6 +147,18 @@ treeTable =
             , getButton stats
             ]
 
+        header s =
+            th [] [ Html.text s ]
+
+        headerRow =
+            [ "size"
+            , "height"
+            , "black subtree sizes"
+            , "action"
+            ]
+                |> List.map header
+                |> tr []
+
         formatCell : Html msg -> Html msg
         formatCell item =
             item
@@ -153,6 +166,7 @@ treeTable =
                 |> td
                     [ style "padding-left" "10px"
                     , style "white-space" "nowrap"
+                    , style "text-align" "center"
                     ]
 
         formatRow : List (Html msg) -> Html msg
@@ -164,4 +178,4 @@ treeTable =
     trees
         |> List.map cells
         |> List.map formatRow
-        |> table []
+        |> (\rows -> table [] (headerRow :: rows))
