@@ -92,7 +92,7 @@ statsToDescription stats =
                     rData.color
 
                 lSize =
-                    rData.size
+                    lData.size
 
                 rSize =
                     rData.size
