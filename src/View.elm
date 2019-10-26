@@ -110,7 +110,7 @@ plusMinusButtons spec =
             [ showTreeButton (RangeList.incr spec) "more" ]
 
         cannedButtons =
-            [ 3, 7, 15, 31, 63 ]
+            [ 2, 4, 8, 16, 32, 64, 128 ]
                 |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
 

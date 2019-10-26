@@ -28,7 +28,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         rangeSpec =
-            { n = 10
+            { n = 16
             , insertionMode = InsertForward
             }
 
