@@ -48,7 +48,8 @@ view model =
                 [ treeDiagram rangeSpec ]
 
         contents =
-            [ diagramHeading rangeSpec
+            [ cannedButtons rangeSpec
+            , diagramHeading rangeSpec
             , plusMinusButtons rangeSpec
             ]
                 ++ subTreeButtons rangeSpec
@@ -109,15 +110,18 @@ plusMinusButtons spec =
             -- We don't limit this
             [ showTreeButton (RangeList.incr spec) "more" ]
 
-        cannedButtons =
-            [ 2, 4, 8, 16, 32, 64, 128 ]
-                |> List.map (RangeList.setN spec)
-                |> List.map showTreeNumButton
-
         buttons =
-            lessButtons ++ moreButtons ++ cannedButtons
+            lessButtons ++ moreButtons
     in
     div [] buttons
+
+
+cannedButtons : RangeSpec -> Html Msg
+cannedButtons spec =
+    [ 2, 4, 8, 16, 32, 64, 128 ]
+        |> List.map (RangeList.setN spec)
+        |> List.map showTreeNumButton
+        |> div []
 
 
 subTreeButtons : RangeSpec -> List (Html Msg)
