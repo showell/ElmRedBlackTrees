@@ -132,28 +132,21 @@ plusMinusButtons spec =
 subTreeButtons : RangeSpec -> List (Html Msg)
 subTreeButtons spec =
     let
-        treeDesc =
+        stats =
             spec
                 |> RangeList.toDict
                 |> dictToStats
+
+        treeSummary =
+            stats
                 |> statsToSummary
 
-        counts =
-            case treeDesc of
-                Tree1 n1 ->
-                    [ n1 ]
-
-                Tree2 n1 n2 ->
-                    [ n1, n2 ]
-
-                Tree3 n1 n2 n3 ->
-                    [ n1, n2, n3 ]
-
-                _ ->
-                    []
+        countList =
+            treeSummary
+                |> TreeSummary.toCountList
 
         buttons =
-            counts
+            countList
                 |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
     in
@@ -163,7 +156,7 @@ subTreeButtons spec =
     else
         Html.text "Subtrees: "
             :: buttons
-            ++ [ div [] [ Html.text (TreeSummary.arithmeticBreakdown treeDesc) ] ]
+            ++ [ div [] [ Html.text (TreeSummary.arithmeticBreakdown treeSummary) ] ]
 
 
 getNodeColor : StatsInfo -> String

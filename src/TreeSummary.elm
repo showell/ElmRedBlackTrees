@@ -2,7 +2,9 @@ module TreeSummary exposing
     ( TreeSummary(..)
     , arithmeticBreakdown
     , description
+    , toCountList
     )
+
 
 type TreeSummary
     = Broken
@@ -12,9 +14,25 @@ type TreeSummary
     | Tree3 Int Int Int
 
 
+toCountList : TreeSummary -> List Int
+toCountList treeSummary =
+    case treeSummary of
+        Tree1 n1 ->
+            [ n1 ]
+
+        Tree2 n1 n2 ->
+            [ n1, n2 ]
+
+        Tree3 n1 n2 n3 ->
+            [ n1, n2, n3 ]
+
+        _ ->
+            []
+
+
 description : TreeSummary -> String
-description treeDesc =
-    case treeDesc of
+description treeSummary =
+    case treeSummary of
         Tree1 count1 ->
             String.fromInt count1
 
@@ -38,8 +56,8 @@ description treeDesc =
 
 
 arithmeticBreakdown : TreeSummary -> String
-arithmeticBreakdown treeDesc =
-    case treeDesc of
+arithmeticBreakdown treeSummary =
+    case treeSummary of
         Tree2 n1 n2 ->
             String.fromInt (n1 + n2 + 1)
                 ++ " = "
