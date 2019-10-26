@@ -9,13 +9,8 @@ import DictHelper
 import Html
     exposing
         ( Html
-        , button
         , div
         , span
-        , table
-        , td
-        , th
-        , tr
         )
 import Html.Attributes
     exposing
@@ -48,37 +43,32 @@ view model =
         rangeSpec =
             model.rangeSpec
 
-        leftSide =
-            [ treeTable rangeSpec
-            ]
+        treeView =
+            div [ style "max-width" "800px" ]
+                [ treeDiagram rangeSpec ]
 
-        rightSide =
+        contents =
             [ diagramHeading rangeSpec
             , plusMinusButtons rangeSpec
             ]
                 ++ subTreeButtons rangeSpec
-                ++ [ treeDiagram rangeSpec
-                   ]
+                ++ [ treeView ]
 
-        leftCss =
-            [ style "height" "100vh"
-            , style "overflow-y" "auto"
-            , style "padding-right" "100px"
-            , style "min-width" "200px"
-            ]
-
-        rightCss =
+        css =
             [ style "padding" "20px"
             ]
     in
-    div [ style "display" "flex", style "flex-direction" "row" ]
-        [ div leftCss leftSide
-        , div rightCss rightSide
-        ]
+    div css contents
 
 
 diagramHeading : RangeSpec -> Html Msg
 diagramHeading spec =
+    let
+        flipButton =
+            Html.button
+                [ onClick (ShowTree (RangeList.flip spec)) ]
+                [ Html.text "flip" ]
+    in
     div []
         [ div
             [ style "font-size" "120%"
@@ -90,14 +80,14 @@ diagramHeading spec =
             ]
         , div [ style "padding" "5px" ]
             [ Html.text (RangeList.toString spec)
-            , button [ onClick (ShowTree (RangeList.flip spec)) ] [ Html.text "flip" ]
+            , flipButton
             ]
         ]
 
 
 showTreeButton : RangeSpec -> String -> Html Msg
 showTreeButton spec label =
-    button [ onClick (ShowTree spec) ] [ Html.text label ]
+    Html.button [ onClick (ShowTree spec) ] [ Html.text label ]
 
 
 showTreeNumButton : RangeSpec -> Html Msg
@@ -252,78 +242,3 @@ treeDiagram spec =
     spec
         |> specToStats
         |> TreeDiagram.diagramView getNodeColor getNodeText
-
-
-treeTable : RangeSpec -> Html Msg
-treeTable currSpec =
-    let
-        insertionMode =
-            currSpec.insertionMode
-
-        allSpecs =
-            List.range 1 63
-                |> List.map (\n -> { n = n, insertionMode = insertionMode })
-
-        specStatTups =
-            allSpecs
-                |> List.map (\spec -> ( spec, specToStats spec ))
-
-        size tree =
-            tree
-                |> BinaryTree.size
-                |> String.fromInt
-                |> Html.text
-
-        height tree =
-            tree
-                |> BinaryTree.height
-                |> String.fromInt
-                |> Html.text
-
-        cells spec stats =
-            [ size stats
-            , height stats
-            , TreeSummary.description (statsToSummary stats) |> Html.text
-            , showTreeButton spec "show"
-            ]
-
-        header s =
-            th [] [ Html.text s ]
-
-        headerRow =
-            [ "size"
-            , "height"
-            , "black subtree sizes"
-            , "action"
-            ]
-                |> List.map header
-                |> tr []
-
-        formatCell : Html msg -> Html msg
-        formatCell item =
-            item
-                |> List.singleton
-                |> td
-                    [ style "padding-left" "10px"
-                    , style "white-space" "nowrap"
-                    , style "text-align" "center"
-                    ]
-
-        formatRow : ( RangeSpec, StatsTree ) -> Html Msg
-        formatRow ( spec, stats ) =
-            let
-                css =
-                    if spec.n == currSpec.n then
-                        [ style "background" "lightgreen"
-                        ]
-
-                    else
-                        []
-            in
-            cells spec stats
-                |> List.map formatCell
-                |> tr css
-    in
-    specStatTups
-        |> List.map formatRow
-        |> (\rows -> table [] (headerRow :: rows))
