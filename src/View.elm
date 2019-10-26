@@ -202,9 +202,12 @@ binaryBreakdown stats =
                         - blackCount
                         |> toBinaryList
 
+                coloredText color text =
+                    span [ style "color" color ] [ Html.text text ]
+
                 redFrag n =
-                    [ Html.text " + "
-                    , span [ style "color" "red" ] [ Html.text (String.fromInt n) ]
+                    [ coloredText "blue" " + "
+                    , coloredText "red" (String.fromInt n)
                     ]
 
                 redBreakdown =
@@ -213,8 +216,8 @@ binaryBreakdown stats =
                         |> List.concat
 
                 content =
-                    span [ style "color" "blue" ] [ Html.text (String.fromInt data.size ++ " = ") ]
-                        :: span [ style "color" "black" ] [ Html.text (String.fromInt blackCount) ]
+                    coloredText "blue" (String.fromInt data.size ++ " = ")
+                        :: coloredText "black" (String.fromInt blackCount)
                         :: redBreakdown
             in
             div [] content
