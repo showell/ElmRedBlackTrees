@@ -152,7 +152,7 @@ subTreeButtons spec =
                 |> List.map showTreeNumButton
 
         breakDowns =
-            div [ style "color" "blue" ] [ Html.text (TreeSummary.arithmeticBreakdown treeSummary) ]
+            TreeSummary.arithmeticBreakdown treeSummary
                 :: binaryBreakdown stats
     in
     if List.isEmpty buttons then

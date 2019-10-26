@@ -5,6 +5,21 @@ module TreeSummary exposing
     , toCountList
     )
 
+import Html
+    exposing
+        ( Html
+        , div
+        , span
+        )
+import Html.Attributes
+    exposing
+        ( style
+        )
+import Type
+    exposing
+        ( Msg(..)
+        )
+
 
 type TreeSummary
     = Broken
@@ -55,24 +70,51 @@ description treeSummary =
             "broken"
 
 
-arithmeticBreakdown : TreeSummary -> String
+coloredText : String -> String -> Html Msg
+coloredText color text =
+    span [ style "color" color ] [ Html.text text ]
+
+
+coloredInt : String -> Int -> Html Msg
+coloredInt color n =
+    coloredText color (String.fromInt n)
+
+
+arithmeticBreakdown : TreeSummary -> Html Msg
 arithmeticBreakdown treeSummary =
+    let
+        equal =
+            coloredText "blue" " = "
+
+        plus =
+            coloredText "blue" " + "
+    in
     case treeSummary of
         Tree2 n1 n2 ->
-            String.fromInt (n1 + n2 + 1)
-                ++ " = "
-                ++ String.fromInt n1
-                ++ " + 1 + "
-                ++ String.fromInt n2
+            [ coloredInt "blue" (n1 + n2 + 1)
+            , equal
+            , coloredInt "black" n1
+            , plus
+            , coloredInt "black" 1
+            , plus
+            , coloredInt "black" n2
+            ]
+                |> div []
 
         Tree3 n1 n2 n3 ->
-            String.fromInt (n1 + n2 + n3 + 2)
-                ++ " = "
-                ++ String.fromInt n1
-                ++ " + 1 + "
-                ++ String.fromInt n2
-                ++ " + 1 + "
-                ++ String.fromInt n3
+            [ coloredInt "blue" (n1 + n2 + n3 + 2)
+            , equal
+            , coloredInt "black" n1
+            , plus
+            , coloredInt "red" 1
+            , plus
+            , coloredInt "black" n2
+            , plus
+            , coloredInt "black" 1
+            , plus
+            , coloredInt "black" n3
+            ]
+                |> div []
 
         _ ->
-            ""
+            div [] []
