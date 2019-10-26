@@ -21,7 +21,8 @@ import TreeSummary
         )
 import Type
     exposing
-        ( StatsInfo
+        ( ShapeTree
+        , StatsInfo
         , StatsTree
         )
 
@@ -34,12 +35,6 @@ type alias InternalNode k v =
     }
 
 
-type alias ShapeTree =
-    BinaryTree
-        { color : String
-        }
-
-
 emptyStatsInfo : StatsInfo
 emptyStatsInfo =
     { depth = 0
@@ -47,6 +42,7 @@ emptyStatsInfo =
     , size = 0
     , color = ""
     , sig = "_"
+    , n = 0
     }
 
 
@@ -161,6 +157,9 @@ shapeToStats shapeTree =
                 color =
                     data_.color
 
+                n =
+                    data_.n
+
                 blackDepth =
                     if color == "B" then
                         1 + l.blackDepth
@@ -185,6 +184,7 @@ shapeToStats shapeTree =
                     , size = size
                     , color = color
                     , sig = sig
+                    , n = n
                     }
             in
             Node data left right
@@ -215,8 +215,24 @@ toShapeTree internals =
                         |> List.map slicePath
                         |> toShapeTree
 
+                left =
+                    getSubTree "l"
+
+                offset =
+                    1 + BinaryTree.size left
+
+                bump node =
+                    { node
+                        | n = node.n + offset
+                    }
+
+                right =
+                    getSubTree "r"
+                        |> BinaryTree.map bump
+
                 data =
                     { color = top.color
+                    , n = offset
                     }
             in
-            Node data (getSubTree "l") (getSubTree "r")
+            Node data left right

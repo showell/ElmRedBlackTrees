@@ -3,6 +3,7 @@ module Type exposing
     , Model
     , Msg(..)
     , RangeSpec
+    , ShapeTree
     , StatsInfo
     , StatsTree
     )
@@ -13,12 +14,20 @@ import BinaryTree
         )
 
 
+type alias ShapeTree =
+    BinaryTree
+        { color : String
+        , n : Int
+        }
+
+
 type alias StatsInfo =
     { depth : Int
     , blackDepth : Int
     , size : Int
     , color : String
     , sig : String
+    , n : Int
     }
 
 
