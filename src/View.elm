@@ -14,7 +14,8 @@ import Html
         )
 import Html.Attributes
     exposing
-        ( style
+        ( disabled
+        , style
         )
 import Html.Events
     exposing
@@ -49,8 +50,9 @@ view model =
 
         contents =
             [ cannedButtons rangeSpec
-            , diagramHeading rangeSpec
             , plusMinusButtons rangeSpec
+            , Html.hr [] []
+            , diagramHeading rangeSpec
             ]
                 ++ subTreeButtons rangeSpec
                 ++ [ treeView ]
@@ -99,19 +101,23 @@ showTreeNumButton spec =
 plusMinusButtons : RangeSpec -> Html Msg
 plusMinusButtons spec =
     let
-        lessButtons =
-            if spec.n == 1 then
-                []
+        lessButton =
+            let
+                attrs =
+                    if spec.n == 1 then
+                        [ disabled True ]
 
-            else
-                [ showTreeButton (RangeList.decr spec) "less" ]
+                    else
+                        [ onClick (ShowTree (RangeList.decr spec)) ]
+            in
+            Html.button attrs [ Html.text "less" ]
 
-        moreButtons =
+        moreButton =
             -- We don't limit this
-            [ showTreeButton (RangeList.incr spec) "more" ]
+            showTreeButton (RangeList.incr spec) "more"
 
         buttons =
-            lessButtons ++ moreButtons
+            [ lessButton, moreButton ]
     in
     div [] buttons
 
