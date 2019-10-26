@@ -1,10 +1,7 @@
 module DictHelper exposing
-    ( DescribeTree(..)
-    , StatsInfo
-    , StatsTree
-    , dictToStats
+    ( dictToStats
     , listToStats
-    , statsToDescription
+    , statsToSummary
     )
 
 import BinaryTree
@@ -18,16 +15,21 @@ import MyDict
         , fromList
         , toInternalRepresentation
         )
-
-
-type alias Color =
-    String
+import TreeSummary
+    exposing
+        ( TreeSummary(..)
+        )
+import Type
+    exposing
+        ( StatsInfo
+        , StatsTree
+        )
 
 
 type alias InternalNode k v =
     { k : k
     , v : v
-    , color : Color
+    , color : String
     , path : String
     }
 
@@ -36,27 +38,6 @@ type alias ShapeTree =
     BinaryTree
         { color : String
         }
-
-
-type alias StatsInfo =
-    { depth : Int
-    , blackDepth : Int
-    , size : Int
-    , color : Color
-    , sig : String
-    }
-
-
-type alias StatsTree =
-    BinaryTree StatsInfo
-
-
-type DescribeTree
-    = Broken
-    | Nada
-    | Tree1 Int
-    | Tree2 Int Int
-    | Tree3 Int Int Int
 
 
 emptyStatsInfo : StatsInfo
@@ -69,13 +50,13 @@ emptyStatsInfo =
     }
 
 
-statsToDescription : StatsTree -> DescribeTree
-statsToDescription stats =
+statsToSummary : StatsTree -> TreeSummary
+statsToSummary stats =
     case stats of
-        Empty ->
+        BinaryTree.Empty ->
             Nada
 
-        Node data left right ->
+        BinaryTree.Node data left right ->
             let
                 size =
                     data.size

@@ -3,11 +3,8 @@ module View exposing (view)
 import BinaryTree
 import DictHelper
     exposing
-        ( DescribeTree(..)
-        , StatsInfo
-        , StatsTree
-        , dictToStats
-        , statsToDescription
+        ( dictToStats
+        , statsToSummary
         )
 import Html
     exposing
@@ -29,12 +26,18 @@ import Html.Events
         )
 import RangeList
 import TreeDiagram
+import TreeSummary
+    exposing
+        ( TreeSummary(..)
+        )
 import Type
     exposing
         ( InsertionMode(..)
         , Model
         , Msg(..)
         , RangeSpec
+        , StatsInfo
+        , StatsTree
         )
 
 
@@ -126,54 +129,6 @@ plusMinusButtons spec =
     div [] buttons
 
 
-description : DescribeTree -> String
-description treeDesc =
-    case treeDesc of
-        Tree1 count1 ->
-            String.fromInt count1
-
-        Tree2 count1 count2 ->
-            String.fromInt count1
-                ++ " "
-                ++ String.fromInt count2
-
-        Tree3 count1 count2 count3 ->
-            String.fromInt count1
-                ++ " "
-                ++ String.fromInt count2
-                ++ " "
-                ++ String.fromInt count3
-
-        Nada ->
-            "nada"
-
-        Broken ->
-            "broken"
-
-
-arithmeticBreakdown : DescribeTree -> String
-arithmeticBreakdown treeDesc =
-    case treeDesc of
-        Tree2 n1 n2 ->
-            String.fromInt (n1 + n2 + 1)
-                ++ " = "
-                ++ String.fromInt n1
-                ++ " + 1 + "
-                ++ String.fromInt n2
-
-        Tree3 n1 n2 n3 ->
-            String.fromInt (n1 + n2 + n3 + 2)
-                ++ " = "
-                ++ String.fromInt n1
-                ++ " + 1 + "
-                ++ String.fromInt n2
-                ++ " + 1 + "
-                ++ String.fromInt n3
-
-        _ ->
-            ""
-
-
 subTreeButtons : RangeSpec -> List (Html Msg)
 subTreeButtons spec =
     let
@@ -181,7 +136,7 @@ subTreeButtons spec =
             spec
                 |> RangeList.toDict
                 |> dictToStats
-                |> statsToDescription
+                |> statsToSummary
 
         counts =
             case treeDesc of
@@ -208,7 +163,7 @@ subTreeButtons spec =
     else
         Html.text "Subtrees: "
             :: buttons
-            ++ [ div [] [ Html.text (arithmeticBreakdown treeDesc) ] ]
+            ++ [ div [] [ Html.text (TreeSummary.arithmeticBreakdown treeDesc) ] ]
 
 
 getNodeColor : StatsInfo -> String
@@ -267,7 +222,7 @@ treeTable currSpec =
         cells spec stats =
             [ size stats
             , height stats
-            , description (statsToDescription stats) |> Html.text
+            , TreeSummary.description (statsToSummary stats) |> Html.text
             , showTreeButton spec "show"
             ]
 

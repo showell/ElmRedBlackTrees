@@ -3,7 +3,27 @@ module Type exposing
     , Model
     , Msg(..)
     , RangeSpec
+    , StatsInfo
+    , StatsTree
     )
+
+import BinaryTree
+    exposing
+        ( BinaryTree
+        )
+
+
+type alias StatsInfo =
+    { depth : Int
+    , blackDepth : Int
+    , size : Int
+    , color : String
+    , sig : String
+    }
+
+
+type alias StatsTree =
+    BinaryTree StatsInfo
 
 
 type InsertionMode
