@@ -11,6 +11,7 @@ import Html
         ( Html
         , button
         , div
+        , span
         , table
         , td
         , th
@@ -149,6 +150,10 @@ subTreeButtons spec =
             countList
                 |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
+
+        breakDowns =
+            div [ style "color" "blue" ] [ Html.text (TreeSummary.arithmeticBreakdown treeSummary) ]
+                :: binaryBreakdown stats
     in
     if List.isEmpty buttons then
         []
@@ -156,7 +161,64 @@ subTreeButtons spec =
     else
         Html.text "Subtrees: "
             :: buttons
-            ++ [ div [] [ Html.text (TreeSummary.arithmeticBreakdown treeSummary) ] ]
+            ++ breakDowns
+
+
+toBinaryList : Int -> List Int
+toBinaryList num =
+    let
+        f n powerOfTwo =
+            if n == 0 then
+                []
+
+            else
+                let
+                    head =
+                        (n |> modBy 2) * powerOfTwo
+
+                    rest =
+                        f (n // 2) (powerOfTwo * 2)
+                in
+                head :: rest
+    in
+    f num 1
+        |> List.filter (\bit -> bit /= 0)
+        |> List.reverse
+
+
+binaryBreakdown : StatsTree -> List (Html Msg)
+binaryBreakdown stats =
+    case stats of
+        BinaryTree.Empty ->
+            []
+
+        BinaryTree.Node data _ _ ->
+            let
+                blackCount =
+                    2 ^ data.blackDepth - 1
+
+                redCounts =
+                    data.size
+                        - blackCount
+                        |> toBinaryList
+
+                redFrag n =
+                    [ Html.text " + "
+                    , span [ style "color" "red" ] [ Html.text (String.fromInt n) ]
+                    ]
+
+                redBreakdown =
+                    redCounts
+                        |> List.map redFrag
+                        |> List.concat
+
+                content =
+                    span [ style "color" "blue" ] [ Html.text (String.fromInt data.size ++ " = ") ]
+                        :: span [ style "color" "black" ] [ Html.text (String.fromInt blackCount) ]
+                        :: redBreakdown
+            in
+            div [] content
+                |> List.singleton
 
 
 getNodeColor : StatsInfo -> String

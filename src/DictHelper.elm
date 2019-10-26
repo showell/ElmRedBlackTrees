@@ -158,14 +158,18 @@ shapeToStats shapeTree =
                 depth =
                     1 + min l.depth r.depth
 
+                color =
+                    data_.color
+
                 blackDepth =
-                    1 + l.blackDepth
+                    if color == "B" then
+                        1 + l.blackDepth
+
+                    else
+                        l.blackDepth
 
                 size =
                     1 + l.size + r.size
-
-                color =
-                    data_.color
 
                 sig =
                     color
