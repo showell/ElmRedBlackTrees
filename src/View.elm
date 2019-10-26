@@ -222,8 +222,8 @@ binaryBreakdown stats =
 
 
 getNodeColor : StatsInfo -> String
-getNodeColor statsNode =
-    case statsNode.color of
+getNodeColor statsInfo =
+    case statsInfo.color of
         "R" ->
             "red"
 
@@ -232,6 +232,12 @@ getNodeColor statsNode =
 
         _ ->
             "yellow"
+
+
+getNodeText : StatsInfo -> String
+getNodeText statsInfo =
+    statsInfo.n
+        |> String.fromInt
 
 
 specToStats : RangeSpec -> StatsTree
@@ -245,7 +251,7 @@ treeDiagram : RangeSpec -> Html Msg
 treeDiagram spec =
     spec
         |> specToStats
-        |> TreeDiagram.diagramView getNodeColor
+        |> TreeDiagram.diagramView getNodeColor getNodeText
 
 
 treeTable : RangeSpec -> Html Msg

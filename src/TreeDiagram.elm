@@ -30,8 +30,8 @@ type alias DiagramData v =
     }
 
 
-diagramView : (v -> String) -> BinaryTree v -> Html msg
-diagramView getNodeColor tree =
+diagramView : (v -> String) -> (v -> String) -> BinaryTree v -> Html msg
+diagramView getNodeColor getNodeText tree =
     let
         data : DiagramData v
         data =
@@ -47,8 +47,11 @@ diagramView getNodeColor tree =
         r =
             w / 2.5
 
+        fontSize =
+            r * 0.7
+
         strokeWidth =
-            r / 5.0
+            r / 30.0
 
         scaleCoord ( x, y ) =
             let
@@ -95,14 +98,44 @@ diagramView getNodeColor tree =
 
                 fill =
                     getNodeColor coordNode.data
+
+                circle =
+                    Svg.circle
+                        [ Svg.Attributes.cx (String.fromFloat cx)
+                        , Svg.Attributes.cy (String.fromFloat cy)
+                        , Svg.Attributes.r (String.fromFloat r)
+                        , Svg.Attributes.fill fill
+                        ]
+                        []
+
+                text =
+                    getNodeText coordNode.data
+
+                textAnchor =
+                    "middle"
+
+                textFill =
+                    "white"
+
+                x =
+                    cx
+
+                y =
+                    cy + (fontSize / 4)
+
+                label =
+                    Svg.text_
+                        [ Svg.Attributes.x (String.fromFloat x)
+                        , Svg.Attributes.y (String.fromFloat y)
+                        , Svg.Attributes.fontSize (String.fromFloat fontSize)
+                        , Svg.Attributes.fill textFill
+                        , Svg.Attributes.strokeWidth (String.fromFloat strokeWidth)
+                        , Svg.Attributes.textAnchor textAnchor
+                        ]
+                        [ Svg.text text
+                        ]
             in
-            Svg.circle
-                [ Svg.Attributes.cx (String.fromFloat cx)
-                , Svg.Attributes.cy (String.fromFloat cy)
-                , Svg.Attributes.r (String.fromFloat r)
-                , Svg.Attributes.fill fill
-                ]
-                []
+            Svg.g [] [ circle, label ]
 
         drawCoordNodes : List (Html msg)
         drawCoordNodes =
