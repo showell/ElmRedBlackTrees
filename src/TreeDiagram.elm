@@ -37,6 +37,23 @@ diagramView getNodeColor getNodeText tree =
         data =
             diagramData tree
 
+        coordMaxY coordNode =
+            let
+                ( _, y, r ) =
+                    coordNode.coord
+            in
+            y + r
+
+        viewBoxHeight =
+            data.coordNodes
+                |> List.map coordMaxY
+                |> List.maximum
+                |> Maybe.withDefault 0
+                |> String.fromFloat
+
+        viewBox =
+            "0 0 100 " ++ viewBoxHeight
+
         drawEdge : Edge v -> Html msg
         drawEdge edge =
             let
@@ -129,7 +146,7 @@ diagramView getNodeColor getNodeText tree =
         ++ drawCoordNodes
         |> Svg.svg
             [ Svg.Attributes.width "100%"
-            , Svg.Attributes.viewBox "0 0 100 100"
+            , Svg.Attributes.viewBox viewBox
             ]
 
 
