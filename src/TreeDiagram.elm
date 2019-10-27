@@ -13,7 +13,7 @@ import Svg.Attributes
 
 
 type alias CoordNode v =
-    { coord : ( Int, Int )
+    { coord : ( Float, Float, Float )
     , data : v
     }
 
@@ -37,43 +37,20 @@ diagramView getNodeColor getNodeText tree =
         data =
             diagramData tree
 
-        size =
-            BinaryTree.size tree
-                |> toFloat
-
-        w =
-            100.0 / (size + 2)
-
-        r =
-            w / 2.5
-
-        fontSize =
-            r * 0.7
-
-        strokeWidth =
-            r / 30.0
-
-        scaleCoord ( x, y ) =
-            let
-                xx =
-                    w * toFloat x + r
-
-                yy =
-                    w * toFloat y + r
-            in
-            ( xx, yy )
-
         drawEdge : Edge v -> Html msg
         drawEdge edge =
             let
-                ( x1, y1 ) =
-                    scaleCoord edge.parent.coord
+                ( x1, y1, r ) =
+                    edge.parent.coord
 
-                ( x2, y2 ) =
-                    scaleCoord edge.child.coord
+                ( x2, y2, _ ) =
+                    edge.child.coord
 
                 stroke =
                     "gray"
+
+                strokeWidth =
+                    r / 30.0
             in
             Svg.line
                 [ Svg.Attributes.x1 (String.fromFloat x1)
@@ -93,8 +70,14 @@ diagramView getNodeColor getNodeText tree =
         drawCoordNode : CoordNode v -> Html msg
         drawCoordNode coordNode =
             let
-                ( cx, cy ) =
-                    scaleCoord coordNode.coord
+                ( cx, cy, r ) =
+                    coordNode.coord
+
+                fontSize =
+                    r * 0.7
+
+                strokeWidth =
+                    r / 30.0
 
                 fill =
                     getNodeColor coordNode.data
@@ -146,7 +129,7 @@ diagramView getNodeColor getNodeText tree =
         ++ drawCoordNodes
         |> Svg.svg
             [ Svg.Attributes.width "100%"
-            , Svg.Attributes.viewBox "0 0 100 75"
+            , Svg.Attributes.viewBox "0 0 100 100"
             ]
 
 
@@ -203,45 +186,53 @@ diagramData tree =
 
 
 toCoordsTree : BinaryTree v -> BinaryTree (CoordNode v)
-toCoordsTree tree =
-    case tree of
-        Node data left_ right_ ->
-            let
-                xOffset =
-                    BinaryTree.size left_ + 1
+toCoordsTree fullTree =
+    let
+        makeTree : Float -> Float -> Float -> Float -> BinaryTree v -> BinaryTree (CoordNode v)
+        makeTree fullWidth ratioFactor xOffset yOffset tree =
+            case tree of
+                Node data left_ right_ ->
+                    let
+                        halfWidth =
+                            fullWidth / 2
 
-                adjustLeft ( x, y ) =
-                    ( x, y + 1 )
+                        r =
+                            ratioFactor * halfWidth
 
-                adjustRight ( x, y ) =
-                    ( x + xOffset, y + 1 )
+                        cx =
+                            xOffset + halfWidth
 
-                adjustLeftNode node =
-                    { node
-                        | coord = node.coord |> adjustLeft
-                    }
+                        cy =
+                            yOffset + r
 
-                adjustRightNode node =
-                    { node
-                        | coord = node.coord |> adjustRight
-                    }
+                        lxOffset =
+                            cx - halfWidth
 
-                left =
-                    left_
-                        |> toCoordsTree
-                        |> BinaryTree.map adjustLeftNode
+                        rxOffset =
+                            cx
 
-                right =
-                    right_
-                        |> toCoordsTree
-                        |> BinaryTree.map adjustRightNode
+                        childYOffset =
+                            yOffset + 2.2 * r
 
-                coordNode =
-                    { coord = ( xOffset, 0 )
-                    , data = data
-                    }
-            in
-            Node coordNode left right
+                        childRatioFactor =
+                            min 0.9 (ratioFactor * 1.8)
 
-        Empty ->
-            Empty
+                        coordNode =
+                            { coord = ( cx, cy, r )
+                            , data = data
+                            }
+
+                        left =
+                            left_
+                                |> makeTree halfWidth childRatioFactor lxOffset childYOffset
+
+                        right =
+                            right_
+                                |> makeTree halfWidth childRatioFactor rxOffset childYOffset
+                    in
+                    Node coordNode left right
+
+                Empty ->
+                    Empty
+    in
+    makeTree 100 0.08 0 0 fullTree

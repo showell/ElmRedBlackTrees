@@ -3,6 +3,7 @@ module BinaryTree exposing
     , height
     , map
     , size
+    , sizeFullTree
     , withDefault
     )
 
@@ -20,6 +21,11 @@ withDefault default tree =
 
         Empty ->
             default
+
+
+sizeFullTree : BinaryTree v -> Int
+sizeFullTree tree =
+    2 ^ height tree - 1
 
 
 size : BinaryTree v -> Int
