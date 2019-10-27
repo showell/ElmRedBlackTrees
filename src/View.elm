@@ -51,11 +51,12 @@ view model =
         contents =
             [ cannedButtons rangeSpec
             , plusMinusButtons rangeSpec
+            , subTreeButtons rangeSpec
             , Html.hr [] []
             , diagramHeading rangeSpec
+            , breakDowns rangeSpec
+            , treeView
             ]
-                ++ subTreeButtons rangeSpec
-                ++ [ treeView ]
 
         css =
             [ style "padding" "20px"
@@ -130,7 +131,24 @@ cannedButtons spec =
         |> div []
 
 
-subTreeButtons : RangeSpec -> List (Html Msg)
+breakDowns : RangeSpec -> Html Msg
+breakDowns spec =
+    let
+        stats =
+            spec
+                |> RangeList.toDict
+                |> dictToStats
+
+        treeSummary =
+            stats
+                |> statsToSummary
+    in
+    TreeSummary.arithmeticBreakdown treeSummary
+        :: binaryBreakdown stats
+        |> div []
+
+
+subTreeButtons : RangeSpec -> Html Msg
 subTreeButtons spec =
     let
         stats =
@@ -150,18 +168,13 @@ subTreeButtons spec =
             countList
                 |> List.map (RangeList.setN spec)
                 |> List.map showTreeNumButton
-
-        breakDowns =
-            TreeSummary.arithmeticBreakdown treeSummary
-                :: binaryBreakdown stats
     in
     if List.isEmpty buttons then
-        []
+        div [] []
 
     else
-        Html.text "Subtrees: "
-            :: buttons
-            ++ breakDowns
+        buttons
+            |> div []
 
 
 toBinaryList : Int -> List Int
