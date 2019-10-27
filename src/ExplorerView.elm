@@ -22,7 +22,7 @@ import Html.Events
         ( onClick
         )
 import RangeList
-import TreeDiagram
+import StatsTreeDiagram exposing (treeDiagram)
 import TreeSummary
     exposing
         ( TreeSummary(..)
@@ -32,7 +32,6 @@ import Type
         ( InsertionMode(..)
         , Msg(..)
         , RangeSpec
-        , StatsInfo
         , StatsTree
         )
 
@@ -225,28 +224,3 @@ binaryBreakdown stats =
             in
             div [] content
                 |> List.singleton
-
-
-getNodeColor : StatsInfo -> String
-getNodeColor statsInfo =
-    case statsInfo.color of
-        "R" ->
-            "red"
-
-        "B" ->
-            "black"
-
-        _ ->
-            "yellow"
-
-
-getNodeText : StatsInfo -> String
-getNodeText statsInfo =
-    statsInfo.n
-        |> String.fromInt
-
-
-treeDiagram : StatsTree -> Html Msg
-treeDiagram stats =
-    stats
-        |> TreeDiagram.diagramView getNodeColor getNodeText
