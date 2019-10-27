@@ -1,13 +1,14 @@
 module Main exposing (main)
 
 import Browser
+import ExplorerView exposing (view)
 import Type
     exposing
         ( InsertionMode(..)
         , Model
         , Msg(..)
+        , Page(..)
         )
-import View exposing (view)
 
 
 
@@ -32,8 +33,11 @@ init _ =
             , insertionMode = InsertForward
             }
 
+        page =
+            Explorer rangeSpec
+
         model =
-            { rangeSpec = rangeSpec
+            { page = page
             }
     in
     ( model, Cmd.none )
@@ -50,7 +54,7 @@ update msg model =
             case msg of
                 ShowTree rangeSpec ->
                     { model
-                        | rangeSpec = rangeSpec
+                        | page = Explorer rangeSpec
                     }
     in
     ( model_, Cmd.none )
@@ -71,6 +75,12 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
+    let
+        bodyContents =
+            case model.page of
+                Explorer rangeSpec ->
+                    ExplorerView.view rangeSpec
+    in
     { title = "RedBlack Trees from Elm"
-    , body = [ View.view model ]
+    , body = [ bodyContents ]
     }

@@ -2,6 +2,7 @@ module Type exposing
     ( InsertionMode(..)
     , Model
     , Msg(..)
+    , Page(..)
     , RangeSpec
     , ShapeTree
     , StatsInfo
@@ -46,8 +47,12 @@ type alias RangeSpec =
     }
 
 
+type Page
+    = Explorer RangeSpec
+
+
 type alias Model =
-    { rangeSpec : RangeSpec
+    { page : Page
     }
 
 

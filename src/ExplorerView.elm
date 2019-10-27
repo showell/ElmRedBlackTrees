@@ -1,4 +1,4 @@
-module View exposing (view)
+module ExplorerView exposing (view)
 
 import BinaryTree
 import DictHelper
@@ -38,12 +38,9 @@ import Type
         )
 
 
-view : Model -> Html Msg
-view model =
+view : RangeSpec -> Html Msg
+view rangeSpec =
     let
-        rangeSpec =
-            model.rangeSpec
-
         treeView =
             div [ style "max-width" "800px" ]
                 [ treeDiagram rangeSpec ]
