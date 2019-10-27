@@ -49,6 +49,7 @@ type alias RangeSpec =
 
 type Page
     = Explorer RangeSpec
+    | SmallTree
 
 
 type alias Model =
@@ -58,3 +59,4 @@ type alias Model =
 
 type Msg
     = ShowTree RangeSpec
+    | SetPage Page

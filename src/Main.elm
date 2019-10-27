@@ -1,7 +1,21 @@
 module Main exposing (main)
 
 import Browser
-import ExplorerView exposing (view)
+import ExplorerView
+import Html
+    exposing
+        ( Html
+        , div
+        )
+import Html.Attributes
+    exposing
+        ( style
+        )
+import Html.Events
+    exposing
+        ( onClick
+        )
+import SmallTreeView
 import Type
     exposing
         ( InsertionMode(..)
@@ -28,19 +42,25 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        rangeSpec =
-            { n = 16
-            , insertionMode = InsertForward
-            }
-
         page =
-            Explorer rangeSpec
+            initExplorer
 
         model =
             { page = page
             }
     in
     ( model, Cmd.none )
+
+
+initExplorer : Page
+initExplorer =
+    let
+        rangeSpec =
+            { n = 16
+            , insertionMode = InsertForward
+            }
+    in
+    Explorer rangeSpec
 
 
 
@@ -55,6 +75,11 @@ update msg model =
                 ShowTree rangeSpec ->
                     { model
                         | page = Explorer rangeSpec
+                    }
+
+                SetPage page ->
+                    { model
+                        | page = page
                     }
     in
     ( model_, Cmd.none )
@@ -76,11 +101,58 @@ subscriptions _ =
 view : Model -> Browser.Document Msg
 view model =
     let
-        bodyContents =
+        subView =
             case model.page of
                 Explorer rangeSpec ->
                     ExplorerView.view rangeSpec
+
+                SmallTree ->
+                    SmallTreeView.view
+
+        body =
+            [ pageTabs model.page
+            , subView
+            ]
     in
     { title = "RedBlack Trees from Elm"
-    , body = [ bodyContents ]
+    , body = body
     }
+
+
+pageTabs : Page -> Html Msg
+pageTabs activePage =
+    let
+        explorerLabel =
+            "Explorer"
+
+        smallTreesLabel =
+            "Small trees"
+
+        tabConfigs =
+            [ ( explorerLabel, SetPage initExplorer )
+            , ( smallTreesLabel, SetPage SmallTree )
+            ]
+
+        activeLabel =
+            case activePage of
+                Explorer _ ->
+                    explorerLabel
+
+                SmallTree ->
+                    smallTreesLabel
+
+        makeTab ( label, cmd ) =
+            let
+                disabled =
+                    label == activeLabel
+            in
+            Html.button
+                [ Html.Attributes.disabled disabled
+                , onClick cmd
+                ]
+                [ Html.text label
+                ]
+    in
+    tabConfigs
+        |> List.map makeTab
+        |> div [ style "padding" "10px" ]

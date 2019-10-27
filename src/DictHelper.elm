@@ -1,5 +1,6 @@
 module DictHelper exposing
     ( dictToStats
+    , eqStatsTree
     , listToStats
     , specToStats
     , statsToSummary
@@ -47,6 +48,26 @@ emptyStatsInfo =
     , sig = "_"
     , n = 0
     }
+
+
+eqStatsTree : StatsTree -> StatsTree -> Bool
+eqStatsTree tree1 tree2 =
+    case tree1 of
+        BinaryTree.Empty ->
+            case tree2 of
+                BinaryTree.Empty ->
+                    True
+
+                BinaryTree.Node _ _ _ ->
+                    False
+
+        BinaryTree.Node data1 _ _ ->
+            case tree2 of
+                BinaryTree.Empty ->
+                    False
+
+                BinaryTree.Node data2 _ _ ->
+                    data1.sig == data2.sig
 
 
 statsToSummary : StatsTree -> TreeSummary
