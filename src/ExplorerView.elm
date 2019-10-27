@@ -3,7 +3,7 @@ module ExplorerView exposing (view)
 import BinaryTree
 import DictHelper
     exposing
-        ( dictToStats
+        ( specToStats
         , statsToSummary
         )
 import Html
@@ -30,7 +30,6 @@ import TreeSummary
 import Type
     exposing
         ( InsertionMode(..)
-        , Model
         , Msg(..)
         , RangeSpec
         , StatsInfo
@@ -41,17 +40,21 @@ import Type
 view : RangeSpec -> Html Msg
 view rangeSpec =
     let
+        stats =
+            rangeSpec
+                |> specToStats
+
         treeView =
             div [ style "max-width" "800px" ]
-                [ treeDiagram rangeSpec ]
+                [ treeDiagram stats ]
 
         contents =
             [ cannedButtons rangeSpec
             , plusMinusButtons rangeSpec
-            , subTreeButtons rangeSpec
+            , subTreeButtons rangeSpec stats
             , Html.hr [] []
             , diagramHeading rangeSpec
-            , breakDowns rangeSpec
+            , breakDowns stats
             , treeView
             ]
 
@@ -128,14 +131,9 @@ cannedButtons spec =
         |> div []
 
 
-breakDowns : RangeSpec -> Html Msg
-breakDowns spec =
+breakDowns : StatsTree -> Html Msg
+breakDowns stats =
     let
-        stats =
-            spec
-                |> RangeList.toDict
-                |> dictToStats
-
         treeSummary =
             stats
                 |> statsToSummary
@@ -145,14 +143,9 @@ breakDowns spec =
         |> div []
 
 
-subTreeButtons : RangeSpec -> Html Msg
-subTreeButtons spec =
+subTreeButtons : RangeSpec -> StatsTree -> Html Msg
+subTreeButtons spec stats =
     let
-        stats =
-            spec
-                |> RangeList.toDict
-                |> dictToStats
-
         treeSummary =
             stats
                 |> statsToSummary
@@ -253,15 +246,7 @@ getNodeText statsInfo =
         |> String.fromInt
 
 
-specToStats : RangeSpec -> StatsTree
-specToStats spec =
-    spec
-        |> RangeList.toDict
-        |> dictToStats
-
-
-treeDiagram : RangeSpec -> Html Msg
-treeDiagram spec =
-    spec
-        |> specToStats
+treeDiagram : StatsTree -> Html Msg
+treeDiagram stats =
+    stats
         |> TreeDiagram.diagramView getNodeColor getNodeText

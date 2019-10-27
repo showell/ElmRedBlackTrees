@@ -1,6 +1,7 @@
 module DictHelper exposing
     ( dictToStats
     , listToStats
+    , specToStats
     , statsToSummary
     )
 
@@ -15,13 +16,15 @@ import MyDict
         , fromList
         , toInternalRepresentation
         )
+import RangeList
 import TreeSummary
     exposing
         ( TreeSummary(..)
         )
 import Type
     exposing
-        ( ShapeTree
+        ( RangeSpec
+        , ShapeTree
         , StatsInfo
         , StatsTree
         )
@@ -126,6 +129,13 @@ listToStats : List comparable -> StatsTree
 listToStats lst =
     lst
         |> listToDict
+        |> dictToStats
+
+
+specToStats : RangeSpec -> StatsTree
+specToStats spec =
+    spec
+        |> RangeList.toDict
         |> dictToStats
 
 
