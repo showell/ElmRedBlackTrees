@@ -125,7 +125,7 @@ plusMinusButtons spec =
 
 cannedButtons : RangeSpec -> Html Msg
 cannedButtons spec =
-    [ 2, 4, 8, 16, 32, 64, 128 ]
+    [ 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]
         |> List.map (RangeList.setN spec)
         |> List.map showTreeNumButton
         |> div []
