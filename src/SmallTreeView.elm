@@ -7,10 +7,19 @@ import Html
         , div
         )
 import Html.Attributes exposing (style)
+import Html.Events
+    exposing
+        ( onClick
+        )
 import List.Extra
 import ListUtil
 import StatsTreeDiagram
-import Type exposing (Msg, SmallTreeLesson(..))
+import Type
+    exposing
+        ( Msg(..)
+        , Page(..)
+        , SmallTreeLesson(..)
+        )
 
 
 view : SmallTreeLesson -> Html Msg
@@ -23,17 +32,6 @@ view lesson =
             viewSimplifiedFourTrees
 
 
-viewSimplifiedFourTrees : Html Msg
-viewSimplifiedFourTrees =
-    let
-        allLists =
-            [ [ 1, 2, 3, 4 ]
-            , [ 4, 3, 2, 1 ]
-            ]
-    in
-    viewTreeTable allLists
-
-
 viewAllFourTrees : Html Msg
 viewAllFourTrees =
     let
@@ -41,8 +39,69 @@ viewAllFourTrees =
             4
                 |> List.range 1
                 |> List.Extra.permutations
+
+        text =
+            """
+            When you create RedBlack trees, the order that you add
+            elements to the tree will influence the shape of the tree,
+            depending on the algorithm.  In this app we are using the
+            Elm implementation of Dict to generate the trees.
+
+            Even though there are N! different ways to insert N
+            elements into a search tree, you generally only get one
+            or two possibilities.  Below we demonstrate this for
+            the N=4 case. Let's simplify...
+        """
     in
-    viewTreeTable allLists
+    [ introText text
+    , nextButton SimplifiedFourTrees
+    , viewTreeTable allLists
+    ]
+        |> div []
+
+
+nextButton : SmallTreeLesson -> Html Msg
+nextButton lesson =
+    Html.button
+        [ onClick (SetPage (SmallTree lesson))
+        , style "margin-bottom" "5px"
+        ]
+        [ Html.text "Next" ]
+
+
+introText : String -> Html Msg
+introText text =
+    text
+        |> String.split "\n\n"
+        |> List.map Html.text
+        |> List.map List.singleton
+        |> List.map (Html.p [])
+        |> div [ style "max-width" "500px" ]
+
+
+viewSimplifiedFourTrees : Html Msg
+viewSimplifiedFourTrees =
+    let
+        allLists =
+            [ [ 1, 2, 3, 4 ]
+            , [ 4, 3, 2, 1 ]
+            ]
+
+        text =
+            """
+            At least for N=4, we can ignore all but two
+            permutations of how we add elements to the list.
+            Before inserting a fifth element, let's just
+            consider the lists below (forward insertion and
+            reverse insertion).
+
+            (under construction)
+            """
+    in
+    [ introText text
+    , viewTreeTable allLists
+    ]
+        |> div []
 
 
 viewTreeTable : List (List Int) -> Html Msg
