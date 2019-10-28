@@ -51,6 +51,7 @@ type alias RangeSpec =
 type SmallTreeLesson
     = AllFourTrees
     | SimplifiedFourTrees
+    | ExtendList
 
 
 type Page

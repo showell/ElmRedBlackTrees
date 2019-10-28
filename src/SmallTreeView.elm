@@ -31,6 +31,9 @@ view lesson =
         SimplifiedFourTrees ->
             viewSimplifiedFourTrees
 
+        ExtendList ->
+            viewExtendList
+
 
 viewAllFourTrees : Html Msg
 viewAllFourTrees =
@@ -94,14 +97,96 @@ viewSimplifiedFourTrees =
             Before inserting a fifth element, let's just
             consider the lists below (forward insertion and
             reverse insertion).
-
-            (under construction)
             """
     in
     [ introText text
+    , nextButton ExtendList
     , viewTreeTable allLists
     ]
         |> div []
+
+
+viewExtendList : Html Msg
+viewExtendList =
+    let
+        text1 =
+            """
+            If we want to extend our search trees from N=4
+            to N=5, here is one way to make all possible extended
+            lists, starting from [4, 3, 2, 1]:
+            """
+
+        startList =
+            List.range 1 4
+                |> List.reverse
+
+        newLists =
+            permuteIntList startList
+
+        text2 =
+            """
+            Let's just normalize them, though:
+            """
+
+        niceLists =
+            newLists
+                |> List.map normalizedList
+    in
+    [ introText text1
+    , newLists |> showLists
+    , introText text2
+    , niceLists |> showLists
+    , Html.text "(under construction)"
+    ]
+        |> div []
+
+
+permuteIntList : List Int -> List (List Float)
+permuteIntList startList =
+    -- assumes positive integers
+    let
+        startFloatList =
+            startList
+                |> List.map toFloat
+
+        newElements =
+            startList
+                |> List.sort
+                |> List.map toFloat
+                |> List.map ((+) 0.5)
+                |> (::) 0.5
+    in
+    newElements
+        |> List.map List.singleton
+        |> List.map ((++) startFloatList)
+
+
+showLists : List a -> Html Msg
+showLists lists =
+    let
+        listItem lst =
+            lst
+                |> Debug.toString
+                |> Html.text
+                |> List.singleton
+                |> Html.li []
+    in
+    lists
+        |> List.map listItem
+        |> Html.ul []
+
+
+normalizedList : List comparable -> List Int
+normalizedList list =
+    -- convert [ 150, 7, 42, 900] to [3, 1, 2, 4]
+    list
+        |> List.indexedMap Tuple.pair
+        |> List.sortBy Tuple.second
+        |> List.map Tuple.first
+        |> List.indexedMap Tuple.pair
+        |> List.sortBy Tuple.second
+        |> List.map Tuple.first
+        |> List.map ((+) 1)
 
 
 viewTreeTable : List (List Int) -> Html Msg
