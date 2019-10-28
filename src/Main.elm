@@ -22,6 +22,7 @@ import Type
         , Model
         , Msg(..)
         , Page(..)
+        , SmallTreeLesson(..)
         )
 
 
@@ -61,6 +62,11 @@ initExplorer =
             }
     in
     Explorer rangeSpec
+
+
+initSmallTree : Page
+initSmallTree =
+    SmallTree AllFourTrees
 
 
 
@@ -106,8 +112,8 @@ view model =
                 Explorer rangeSpec ->
                     ExplorerView.view rangeSpec
 
-                SmallTree ->
-                    SmallTreeView.view
+                SmallTree lesson ->
+                    SmallTreeView.view lesson
 
         body =
             [ pageTabs model.page
@@ -130,7 +136,7 @@ pageTabs activePage =
 
         tabConfigs =
             [ ( explorerLabel, SetPage initExplorer )
-            , ( smallTreesLabel, SetPage SmallTree )
+            , ( smallTreesLabel, SetPage initSmallTree )
             ]
 
         activeLabel =
@@ -138,9 +144,15 @@ pageTabs activePage =
                 Explorer _ ->
                     explorerLabel
 
-                SmallTree ->
+                SmallTree _ ->
                     smallTreesLabel
+    in
+    makeTabs tabConfigs activeLabel
 
+
+makeTabs : List ( String, Msg ) -> String -> Html Msg
+makeTabs tabConfigs activeLabel =
+    let
         makeTab ( label, cmd ) =
             let
                 disabled =

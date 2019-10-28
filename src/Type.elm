@@ -5,6 +5,7 @@ module Type exposing
     , Page(..)
     , RangeSpec
     , ShapeTree
+    , SmallTreeLesson(..)
     , StatsInfo
     , StatsTree
     )
@@ -47,9 +48,14 @@ type alias RangeSpec =
     }
 
 
+type SmallTreeLesson
+    = AllFourTrees
+    | SimplifiedFourTrees
+
+
 type Page
     = Explorer RangeSpec
-    | SmallTree
+    | SmallTree SmallTreeLesson
 
 
 type alias Model =
