@@ -15,6 +15,7 @@ import Html.Events
     exposing
         ( onClick
         )
+import MeExample
 import SmallTreeView
 import Type
     exposing
@@ -106,6 +107,13 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
+    { title = "Meta Elm"
+    , body = MeExample.view
+    }
+
+
+
+{--
     let
         subView =
             case model.page of
@@ -123,6 +131,7 @@ view model =
     { title = "RedBlack Trees from Elm"
     , body = body
     }
+    --}
 
 
 pageTabs : Page -> Html Msg
