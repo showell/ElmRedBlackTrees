@@ -8,7 +8,7 @@ module RangeList exposing
     , toString
     )
 
-import MyDict as Dict
+import DictDotDot as Dict
     exposing
         ( Dict
         )

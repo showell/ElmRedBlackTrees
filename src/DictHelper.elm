@@ -11,14 +11,14 @@ import BinaryTree
         ( BinaryTree(..)
         , withDefault
         )
-import DictInternal
-    exposing
-        ( toInternalRepresentation
-        )
-import MyDict
+import DictDotDot
     exposing
         ( Dict
         , fromList
+        )
+import DictInternal
+    exposing
+        ( toInternalRepresentation
         )
 import RangeList
 import TreeSummary
