@@ -1,13 +1,30 @@
 module StatsTreeDiagram exposing (treeDiagram)
 
+import BinaryTree
+    exposing
+        ( BinaryTree(..)
+        )
+import BinaryTreeDiagram
 import Html exposing (Html)
-import TreeDiagram
 import Type
     exposing
         ( Msg(..)
         , StatsInfo
         , StatsTree
         )
+
+
+convertTree : BinaryTree v -> BinaryTreeDiagram.BinaryTree v
+convertTree tree =
+    case tree of
+        Empty ->
+            BinaryTreeDiagram.Empty
+
+        Node v left right ->
+            BinaryTreeDiagram.Node
+                v
+                (convertTree left)
+                (convertTree right)
 
 
 getNodeColor : StatsInfo -> String
@@ -32,4 +49,5 @@ getNodeText statsInfo =
 treeDiagram : StatsTree -> Html Msg
 treeDiagram stats =
     stats
-        |> TreeDiagram.diagramView getNodeColor getNodeText
+        |> convertTree
+        |> BinaryTreeDiagram.diagramView getNodeColor getNodeText
