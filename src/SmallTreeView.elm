@@ -1,5 +1,6 @@
 module SmallTreeView exposing (view)
 
+import Dict
 import DictHelper
 import Html
     exposing
@@ -13,6 +14,17 @@ import Html.Events
         )
 import List.Extra
 import ListUtil
+import MeFloat
+import MeInt
+import MeList
+import MeNumber
+import MeRunTime
+import MeTuple
+import MeType
+    exposing
+        ( Context
+        , Expr(..)
+        )
 import StatsTreeDiagram
 import Type
     exposing
@@ -130,7 +142,7 @@ viewExtendList =
 
         niceLists =
             newLists
-                |> List.map normalizedList
+                |> List.map getRanks
     in
     [ introText text1
     , newLists |> showLists
@@ -176,17 +188,32 @@ showLists lists =
         |> Html.ul []
 
 
-normalizedList : List comparable -> List Int
-normalizedList list =
-    -- convert [ 150, 7, 42, 900] to [3, 1, 2, 4]
-    list
-        |> List.indexedMap Tuple.pair
-        |> List.sortBy Tuple.second
-        |> List.map Tuple.first
-        |> List.indexedMap Tuple.pair
-        |> List.sortBy Tuple.second
-        |> List.map Tuple.first
-        |> List.map ((+) 1)
+ranks : Expr
+ranks =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ F1 MeList.indexedMap MeTuple.pair
+            , F1 MeList.sortByFloat MeTuple.second
+            , F1 MeList.map MeTuple.first
+            , F1 MeList.indexedMap MeTuple.pair
+            , F1 MeList.sortByInt MeTuple.second
+            , F1 MeList.map MeTuple.first
+            , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+            ]
+
+
+getRanks : List Float -> List Int
+getRanks lst =
+    let
+        context =
+            [ ( "lst", MeList.initFloats lst ) ]
+                |> Dict.fromList
+    in
+    MeRunTime.compute context ranks
+        |> MeRunTime.getFinalValue
+        |> MeList.toListInts
+        |> Result.withDefault []
 
 
 viewTreeTable : List (List Int) -> Html Msg
