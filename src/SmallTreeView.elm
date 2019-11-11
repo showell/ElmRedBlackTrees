@@ -14,6 +14,7 @@ import Html.Events
         )
 import List.Extra
 import ListUtil
+import MeCodeGen
 import MeFloat
 import MeInt
 import MeList
@@ -133,44 +134,88 @@ viewExtendList =
                 |> List.reverse
 
         newLists =
-            permuteIntList startList
+            startList
+                |> getPermutedList
 
         text2 =
             """
-            Let's just normalize them, though:
+            Let's just convert them to equivalent "ranked" lists:
             """
 
         niceLists =
             newLists
                 |> List.map getRanks
+
+        codeSamples =
+            [ ( "permutedList", permutedList )
+            , ( "ranks", ranks )
+            ]
+                |> Dict.fromList
+                |> MeCodeGen.fromContext
+                |> Html.text
+                |> List.singleton
+                |> Html.pre []
     in
     [ introText text1
     , newLists |> showLists
     , introText text2
     , niceLists |> showLists
-    , Html.text "(under construction)"
+    , Html.text "(next page TBD)"
+    , Html.hr [] []
+    , Html.text "The above lists were produced with code like below:"
+    , codeSamples
     ]
         |> div []
 
 
-permuteIntList : List Int -> List (List Float)
-permuteIntList startList =
-    -- assumes positive integers
+permutedList : Expr
+permutedList =
     let
-        startFloatList =
-            startList
-                |> List.map toFloat
+        startList =
+            PipeLine
+                (VarName "lst")
+                [ F1 MeList.map MeInt.toFloat
+                ]
 
         newElements =
-            startList
-                |> List.sort
-                |> List.map toFloat
-                |> List.map ((+) 0.5)
-                |> (::) 0.5
+            PipeLine
+                (VarName "startList")
+                [ MeList.sortFloat
+                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
+                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+                ]
     in
-    newElements
-        |> List.map List.singleton
-        |> List.map ((++) startFloatList)
+    Function [ "lst" ] <|
+        LetIn
+            [ ( "startList", startList )
+            , ( "newElements", newElements )
+            ]
+            (PipeLine
+                (VarName "newElements")
+                [ F1 MeList.map MeList.singleton
+                , F1 MeList.map
+                    (LambdaRight (VarName "startList") MeList.plus "x")
+                ]
+            )
+
+
+getPermutedList : List Int -> List (List Float)
+getPermutedList lst =
+    let
+        context =
+            [ ( "lst", MeList.initInts lst ) ]
+                |> Dict.fromList
+
+        toFloatList : Expr -> Result String (List Float)
+        toFloatList lstExpr =
+            lstExpr
+                |> MeRunTime.getFinalValue
+                |> MeList.toList MeFloat.toFloat
+    in
+    MeRunTime.compute context permutedList
+        |> MeRunTime.getFinalValue
+        |> MeList.toList toFloatList
+        |> Result.withDefault []
 
 
 showLists : List a -> Html Msg
