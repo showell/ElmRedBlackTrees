@@ -36,10 +36,12 @@ import Url
 -- Url stuff
 
 
-onUrlRequest req =
+onUrlRequest : Browser.UrlRequest -> Msg
+onUrlRequest _ =
     UrlRequested
 
 
+onUrlChange : Url -> Msg
 onUrlChange url =
     UrlChanged url
 
@@ -198,20 +200,11 @@ pageFromUrl url =
                     Nothing
 
         parseTree frag =
-            case RangeList.fromSlug "tree" frag of
-                Just spec ->
-                    Explorer spec
-                        |> Just
-
-                Nothing ->
-                    Nothing
+            RangeList.fromSlug "tree" frag
+                |> Maybe.map Explorer
     in
-    case url.fragment of
-        Just frag ->
-            oneOf frag [ parseTree, parsePage ]
-
-        Nothing ->
-            Nothing
+    url.fragment
+        |> Maybe.andThen (oneOf [ parseTree, parsePage ])
 
 
 modelFromUrl : Url -> Model -> Model
@@ -221,9 +214,9 @@ modelFromUrl url model =
         |> (\p -> { model | page = p })
 
 
-oneOf : a -> List (a -> Maybe b) -> Maybe b
-oneOf arg fList =
-    -- given an arg and list of functions, apply
+oneOf : List (a -> Maybe b) -> a -> Maybe b
+oneOf fList arg =
+    -- given a list of functions and an arg, apply
     -- functions in order until you get a `Just`
     -- result
     case fList of
@@ -236,7 +229,7 @@ oneOf arg fList =
                     Just v
 
                 Nothing ->
-                    oneOf arg rest
+                    oneOf rest arg
 
 
 
