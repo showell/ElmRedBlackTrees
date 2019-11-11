@@ -23,8 +23,7 @@ import MeRunTime
 import MeTuple
 import MeType
     exposing
-        ( Context
-        , Expr(..)
+        ( Expr(..)
         )
 import StatsTreeDiagram
 import Type
