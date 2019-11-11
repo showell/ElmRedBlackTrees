@@ -14,6 +14,11 @@ import BinaryTree
     exposing
         ( BinaryTree
         )
+import Browser.Navigation as Navigation
+import Url
+    exposing
+        ( Url
+        )
 
 
 type alias ShapeTree =
@@ -61,9 +66,12 @@ type Page
 
 type alias Model =
     { page : Page
+    , key : Navigation.Key
     }
 
 
 type Msg
     = ShowTree RangeSpec
     | SetPage Page
+    | UrlRequested
+    | UrlChanged Url
