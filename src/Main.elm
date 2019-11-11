@@ -165,6 +165,9 @@ pageSlug page =
                 ExtendList ->
                     "extend"
 
+                AllFiveTrees ->
+                    "allfive"
+
 
 pageFromUrl : Url -> Maybe Page
 pageFromUrl url =
@@ -183,6 +186,11 @@ pageFromUrl url =
 
                 "extend" ->
                     ExtendList
+                        |> SmallTree
+                        |> Just
+
+                "allfive" ->
+                    AllFiveTrees
                         |> SmallTree
                         |> Just
 

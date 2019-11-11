@@ -57,6 +57,7 @@ type SmallTreeLesson
     = AllFourTrees
     | SimplifiedFourTrees
     | ExtendList
+    | AllFiveTrees
 
 
 type Page

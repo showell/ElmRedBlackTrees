@@ -47,6 +47,9 @@ view lesson =
         ExtendList ->
             viewExtendList
 
+        AllFiveTrees ->
+            viewAllFiveTrees
+
 
 viewAllFourTrees : Html Msg
 viewAllFourTrees =
@@ -135,7 +138,7 @@ viewExtendList =
 
         newLists =
             startList
-                |> getPermutedList
+                |> getPermutedLists
 
         text2 =
             """
@@ -147,7 +150,7 @@ viewExtendList =
                 |> List.map getRanks
 
         codeSamples =
-            [ ( "permutedList", permutedList )
+            [ ( "permutedLists", permutedLists )
             , ( "ranks", ranks )
             ]
                 |> Dict.fromList
@@ -160,7 +163,7 @@ viewExtendList =
     , newLists |> showLists
     , introText text2
     , niceLists |> showLists
-    , Html.text "(next page TBD)"
+    , nextButton AllFiveTrees
     , Html.hr [] []
     , Html.text "The above lists were produced with code like below:"
     , codeSamples
@@ -168,8 +171,43 @@ viewExtendList =
         |> div []
 
 
-permutedList : Expr
-permutedList =
+viewAllFiveTrees : Html Msg
+viewAllFiveTrees =
+    let
+        allLists =
+            [ [ 1, 2, 3, 4 ]
+            , [ 4, 3, 2, 1 ]
+            ]
+                |> nextGeneration
+
+        text =
+            """
+            Note that for n=5, we get two possible trees again.
+            This time they aren't even exactly symmetrical, but
+            they're both the same depth.
+        """
+    in
+    [ introText text
+    , viewTreeTable allLists
+    ]
+        |> div []
+
+
+nextGeneration : List (List Int) -> List (List Int)
+nextGeneration lsts =
+    let
+        f lst =
+            lst
+                |> getPermutedLists
+                |> List.map getRanks
+    in
+    lsts
+        |> List.map f
+        |> List.concat
+
+
+permutedLists : Expr
+permutedLists =
     let
         startList =
             PipeLine
@@ -199,8 +237,8 @@ permutedList =
             )
 
 
-getPermutedList : List Int -> List (List Float)
-getPermutedList lst =
+getPermutedLists : List Int -> List (List Float)
+getPermutedLists lst =
     let
         context =
             [ ( "lst", MeList.initInts lst ) ]
@@ -212,7 +250,7 @@ getPermutedList lst =
                 |> MeRunTime.getFinalValue
                 |> MeList.toList MeFloat.toFloat
     in
-    MeRunTime.compute context permutedList
+    MeRunTime.compute context permutedLists
         |> MeRunTime.getFinalValue
         |> MeList.toList toFloatList
         |> Result.withDefault []
