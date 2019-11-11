@@ -191,8 +191,9 @@ viewAllFiveTrees =
 
         bottomText =
             """
-            If you look at the trees for n=4, maybe you can see where
-            the "missing" spots are in the above trees.
+            If you look at the trees for n=4, maybe you can see which
+            "missing" spots get filled in above.  (Don't be too
+            distracted by red vs. black at this point.)
             The algorithm that we are looking at generally tries to
             lean trees toward the left.
         """
