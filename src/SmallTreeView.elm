@@ -173,21 +173,34 @@ viewExtendList =
 viewAllFiveTrees : Html Msg
 viewAllFiveTrees =
     let
-        allLists =
+        fourLists =
             [ [ 1, 2, 3, 4 ]
             , [ 4, 3, 2, 1 ]
             ]
+
+        fiveLists =
+            fourLists
                 |> nextGeneration
 
-        text =
+        topText =
             """
             Note that for n=5, we get two possible trees again.
-            This time they aren't even exactly symmetrical, but
+            This time they aren't exactly symmetrical, but
             they're both the same depth.
         """
+
+        bottomText =
+            """
+            If you look at the trees for n=4, maybe you can see where
+            the "missing" spots are in the above trees.
+            The algorithm that we are looking at generally tries to
+            lean trees toward the left.
+        """
     in
-    [ introText text
-    , viewTreeTable allLists
+    [ introText topText
+    , viewTreeTable fiveLists
+    , introText bottomText
+    , viewTreeTable fourLists
     ]
         |> div []
 
