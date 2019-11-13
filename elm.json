@@ -15,7 +15,7 @@
             "elm-community/list-extra": "8.2.2",
             "showell/binary-tree-diagram": "1.0.1",
             "showell/dict-dot-dot": "1.0.1",
-            "showell/meta-elm": "1.1.0"
+            "showell/meta-elm": "2.0.0"
         },
         "indirect": {
             "Chadtech/elm-bool-extra": "2.4.0",
