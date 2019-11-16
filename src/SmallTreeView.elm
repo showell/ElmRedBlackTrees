@@ -231,12 +231,17 @@ permutedLists =
         newElements =
             PipeLine
                 (VarName "startList")
-                [ MeList.sortFloat
-                , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
-                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+                [ MeList.sort
+                , A1
+                    MeList.map
+                    (F1 "n"
+                        (Infix (VarName "n") MeNumber.plus (MeFloat.init 0.5))
+                    )
+                , F1 "items"
+                    (Infix (MeFloat.init 0.5) MeList.cons (VarName "items"))
                 ]
     in
-    Function [ "lst" ] <|
+    F1 "lst" <|
         LetIn
             [ ( "startList", startList )
             , ( "newElements", newElements )
@@ -245,7 +250,9 @@ permutedLists =
                 (VarName "newElements")
                 [ A1 MeList.map MeList.singleton
                 , A1 MeList.map
-                    (LambdaRight (VarName "startList") MeList.plus "x")
+                    (F1 "x"
+                        (Infix (VarName "startList") MeList.append (VarName "x"))
+                    )
                 ]
             )
 
@@ -286,16 +293,22 @@ showLists lists =
 
 ranks : Expr
 ranks =
-    Function [ "lst" ] <|
+    let
+        addOne =
+            F1
+                "n"
+                (Infix (VarName "n") MeNumber.plus (MeInt.init 1))
+    in
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortByFloat MeTuple.second
+            , A1 MeList.sortBy MeTuple.second
             , A1 MeList.map MeTuple.first
             , A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortByInt MeTuple.second
+            , A1 MeList.sortBy MeTuple.second
             , A1 MeList.map MeTuple.first
-            , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+            , A1 MeList.map addOne
             ]
 
 
