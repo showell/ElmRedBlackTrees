@@ -6,11 +6,6 @@ import Html
         ( Html
         , div
         )
-import Html.Attributes exposing (style)
-import Html.Events
-    exposing
-        ( onClick
-        )
 import List.Extra
 import TreeTable
 import Type
@@ -18,6 +13,11 @@ import Type
         ( LessonPage(..)
         , Msg(..)
         , Page(..)
+        )
+import Widget
+    exposing
+        ( introText
+        , nextButton
         )
 
 
@@ -63,25 +63,6 @@ viewAllFourTrees =
     , TreeTable.view allLists
     ]
         |> div []
-
-
-nextButton : LessonPage -> Html Msg
-nextButton lesson =
-    Html.button
-        [ onClick (SetPage (Lesson lesson))
-        , style "margin-bottom" "5px"
-        ]
-        [ Html.text "Next" ]
-
-
-introText : String -> Html Msg
-introText text =
-    text
-        |> String.split "\n\n"
-        |> List.map Html.text
-        |> List.map List.singleton
-        |> List.map (Html.p [])
-        |> div [ style "max-width" "500px" ]
 
 
 viewSimplifiedFourTrees : Html Msg
