@@ -3,20 +3,8 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import ExplorerView
-import Html
-    exposing
-        ( Html
-        , div
-        )
-import Html.Attributes
-    exposing
-        ( style
-        )
-import Html.Events
-    exposing
-        ( onClick
-        )
 import Lesson
+import PageTabs
 import Route
 import Type
     exposing
@@ -163,6 +151,13 @@ subscriptions _ =
 -- VIEW
 
 
+tabConfigs : List ( String, Msg )
+tabConfigs =
+    [ ( "Explorer", SetPage initExplorer )
+    , ( "Lesson", SetPage initLesson )
+    ]
+
+
 view : Model -> Browser.Document Msg
 view model =
     let
@@ -175,55 +170,10 @@ view model =
                     Lesson.view lesson
 
         body =
-            [ pageTabs model.page
+            [ PageTabs.makeTabs tabConfigs
             , subView
             ]
     in
     { title = "RedBlack Trees from Elm"
     , body = body
     }
-
-
-pageTabs : Page -> Html Msg
-pageTabs activePage =
-    let
-        explorerLabel =
-            "Explorer"
-
-        lessonLabel =
-            "Lesson"
-
-        tabConfigs =
-            [ ( explorerLabel, SetPage initExplorer )
-            , ( lessonLabel, SetPage initLesson )
-            ]
-
-        activeLabel =
-            case activePage of
-                Explorer _ ->
-                    explorerLabel
-
-                Lesson _ ->
-                    lessonLabel
-    in
-    makeTabs tabConfigs activeLabel
-
-
-makeTabs : List ( String, Msg ) -> String -> Html Msg
-makeTabs tabConfigs activeLabel =
-    let
-        makeTab ( label, cmd ) =
-            let
-                disabled =
-                    label == activeLabel
-            in
-            Html.button
-                [ Html.Attributes.disabled disabled
-                , onClick cmd
-                ]
-                [ Html.text label
-                ]
-    in
-    tabConfigs
-        |> List.map makeTab
-        |> div [ style "padding" "10px" ]
