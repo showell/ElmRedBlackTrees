@@ -46,7 +46,7 @@ getNodeText statsInfo =
         |> String.fromInt
 
 
-treeDiagram : StatsTree -> Html Msg
+treeDiagram : StatsTree -> Html msg
 treeDiagram stats =
     stats
         |> convertTree

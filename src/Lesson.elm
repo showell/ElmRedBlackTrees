@@ -1,7 +1,6 @@
 module Lesson exposing (view)
 
 import Dict
-import DictHelper
 import Html
     exposing
         ( Html
@@ -13,7 +12,6 @@ import Html.Events
         ( onClick
         )
 import List.Extra
-import ListUtil
 import MeCodeGen
 import MeFloat
 import MeInt
@@ -25,7 +23,7 @@ import MeType
     exposing
         ( Expr(..)
         )
-import StatsTreeDiagram
+import TreeTable
 import Type
     exposing
         ( LessonPage(..)
@@ -73,7 +71,7 @@ viewAllFourTrees =
     in
     [ introText text
     , nextButton SimplifiedFourTrees
-    , viewTreeTable allLists
+    , TreeTable.view allLists
     ]
         |> div []
 
@@ -116,7 +114,7 @@ viewSimplifiedFourTrees =
     in
     [ introText text
     , nextButton ExtendList
-    , viewTreeTable allLists
+    , TreeTable.view allLists
     ]
         |> div []
 
@@ -199,9 +197,9 @@ viewAllFiveTrees =
         """
     in
     [ introText topText
-    , viewTreeTable fiveLists
+    , TreeTable.view fiveLists
     , introText bottomText
-    , viewTreeTable fourLists
+    , TreeTable.view fourLists
     ]
         |> div []
 
@@ -323,48 +321,3 @@ getRanks lst =
         |> MeRunTime.getFinalValue
         |> MeList.toListInts
         |> Result.withDefault []
-
-
-viewTreeTable : List (List Int) -> Html Msg
-viewTreeTable allLists =
-    let
-        treeTups =
-            allLists
-                |> List.map (\lst -> ( lst, DictHelper.listToStats lst ))
-
-        groupTups =
-            treeTups
-                |> ListUtil.combineEqual DictHelper.eqStatsTree
-
-        makeRow ( lists, stats ) =
-            let
-                listDiv lst =
-                    lst
-                        |> Debug.toString
-                        |> Html.text
-                        |> List.singleton
-                        |> div []
-
-                listCell =
-                    lists
-                        |> List.map listDiv
-                        |> Html.td [ style "padding" "7px" ]
-
-                diagramCell =
-                    stats
-                        |> StatsTreeDiagram.treeDiagram
-                        |> List.singleton
-                        |> div [ style "max-width" "500px" ]
-                        |> List.singleton
-                        |> Html.td
-                            [ style "border-top" "1px solid blue"
-                            , style "border-bottom" "1px solid blue"
-                            , style "padding-top" "10px"
-                            ]
-            in
-            [ listCell, diagramCell ]
-                |> Html.tr [ style "vertical-align" "center" ]
-    in
-    groupTups
-        |> List.map makeRow
-        |> Html.table [ style "border-collapse" "collapse" ]
