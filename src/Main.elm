@@ -16,15 +16,15 @@ import Html.Events
     exposing
         ( onClick
         )
+import Lesson
 import RangeList
-import SmallTreeView
 import Type
     exposing
         ( InsertionMode(..)
+        , LessonPage(..)
         , Model
         , Msg(..)
         , Page(..)
-        , SmallTreeLesson(..)
         )
 import Url
     exposing
@@ -98,9 +98,9 @@ initExplorer =
     Explorer rangeSpec
 
 
-initSmallTree : Page
-initSmallTree =
-    SmallTree AllFourTrees
+initLesson : Page
+initLesson =
+    Lesson AllFourTrees
 
 
 
@@ -156,7 +156,7 @@ pageSlug page =
         Explorer rangeSpec ->
             "tree/" ++ RangeList.toSlug rangeSpec
 
-        SmallTree lesson ->
+        Lesson lesson ->
             case lesson of
                 AllFourTrees ->
                     "allfour"
@@ -178,22 +178,22 @@ pageFromUrl url =
             case frag of
                 "allfour" ->
                     AllFourTrees
-                        |> SmallTree
+                        |> Lesson
                         |> Just
 
                 "simple4" ->
                     SimplifiedFourTrees
-                        |> SmallTree
+                        |> Lesson
                         |> Just
 
                 "extend" ->
                     ExtendList
-                        |> SmallTree
+                        |> Lesson
                         |> Just
 
                 "allfive" ->
                     AllFiveTrees
-                        |> SmallTree
+                        |> Lesson
                         |> Just
 
                 _ ->
@@ -253,8 +253,8 @@ view model =
                 Explorer rangeSpec ->
                     ExplorerView.view rangeSpec
 
-                SmallTree lesson ->
-                    SmallTreeView.view lesson
+                Lesson lesson ->
+                    Lesson.view lesson
 
         body =
             [ pageTabs model.page
@@ -272,12 +272,12 @@ pageTabs activePage =
         explorerLabel =
             "Explorer"
 
-        smallTreesLabel =
-            "Small trees"
+        lessonLabel =
+            "Lesson"
 
         tabConfigs =
             [ ( explorerLabel, SetPage initExplorer )
-            , ( smallTreesLabel, SetPage initSmallTree )
+            , ( lessonLabel, SetPage initLesson )
             ]
 
         activeLabel =
@@ -285,8 +285,8 @@ pageTabs activePage =
                 Explorer _ ->
                     explorerLabel
 
-                SmallTree _ ->
-                    smallTreesLabel
+                Lesson _ ->
+                    lessonLabel
     in
     makeTabs tabConfigs activeLabel
 

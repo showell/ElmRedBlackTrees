@@ -1,11 +1,11 @@
 module Type exposing
     ( InsertionMode(..)
+    , LessonPage(..)
     , Model
     , Msg(..)
     , Page(..)
     , RangeSpec
     , ShapeTree
-    , SmallTreeLesson(..)
     , StatsInfo
     , StatsTree
     )
@@ -53,7 +53,7 @@ type alias RangeSpec =
     }
 
 
-type SmallTreeLesson
+type LessonPage
     = AllFourTrees
     | SimplifiedFourTrees
     | ExtendList
@@ -62,7 +62,7 @@ type SmallTreeLesson
 
 type Page
     = Explorer RangeSpec
-    | SmallTree SmallTreeLesson
+    | Lesson LessonPage
 
 
 type alias Model =

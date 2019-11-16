@@ -1,4 +1,4 @@
-module SmallTreeView exposing (view)
+module Lesson exposing (view)
 
 import Dict
 import DictHelper
@@ -28,13 +28,13 @@ import MeType
 import StatsTreeDiagram
 import Type
     exposing
-        ( Msg(..)
+        ( LessonPage(..)
+        , Msg(..)
         , Page(..)
-        , SmallTreeLesson(..)
         )
 
 
-view : SmallTreeLesson -> Html Msg
+view : LessonPage -> Html Msg
 view lesson =
     case lesson of
         AllFourTrees ->
@@ -78,10 +78,10 @@ viewAllFourTrees =
         |> div []
 
 
-nextButton : SmallTreeLesson -> Html Msg
+nextButton : LessonPage -> Html Msg
 nextButton lesson =
     Html.button
-        [ onClick (SetPage (SmallTree lesson))
+        [ onClick (SetPage (Lesson lesson))
         , style "margin-bottom" "5px"
         ]
         [ Html.text "Next" ]
