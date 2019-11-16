@@ -1,6 +1,6 @@
 module Lesson exposing (view)
 
-import Dict
+import GenerateLists
 import Html
     exposing
         ( Html
@@ -12,17 +12,6 @@ import Html.Events
         ( onClick
         )
 import List.Extra
-import MeCodeGen
-import MeFloat
-import MeInt
-import MeList
-import MeNumber
-import MeRunTime
-import MeTuple
-import MeType
-    exposing
-        ( Expr(..)
-        )
 import TreeTable
 import Type
     exposing
@@ -135,7 +124,7 @@ viewExtendList =
 
         newLists =
             startList
-                |> getPermutedLists
+                |> GenerateLists.getPermutedLists
 
         text2 =
             """
@@ -144,26 +133,16 @@ viewExtendList =
 
         niceLists =
             newLists
-                |> List.map getRanks
-
-        codeSamples =
-            [ ( "permutedLists", permutedLists )
-            , ( "ranks", ranks )
-            ]
-                |> Dict.fromList
-                |> MeCodeGen.fromContext
-                |> Html.text
-                |> List.singleton
-                |> Html.pre []
+                |> List.map GenerateLists.getRanks
     in
     [ introText text1
-    , newLists |> showLists
+    , newLists |> GenerateLists.showLists
     , introText text2
-    , niceLists |> showLists
+    , niceLists |> GenerateLists.showLists
     , nextButton AllFiveTrees
     , Html.hr [] []
     , Html.text "The above lists were produced with code like below:"
-    , codeSamples
+    , GenerateLists.codeSamples
     ]
         |> div []
 
@@ -178,7 +157,7 @@ viewAllFiveTrees =
 
         fiveLists =
             fourLists
-                |> nextGeneration
+                |> GenerateLists.nextGeneration
 
         topText =
             """
@@ -202,122 +181,3 @@ viewAllFiveTrees =
     , TreeTable.view fourLists
     ]
         |> div []
-
-
-nextGeneration : List (List Int) -> List (List Int)
-nextGeneration lsts =
-    let
-        f lst =
-            lst
-                |> getPermutedLists
-                |> List.map getRanks
-    in
-    lsts
-        |> List.map f
-        |> List.concat
-
-
-permutedLists : Expr
-permutedLists =
-    let
-        startList =
-            PipeLine
-                (VarName "lst")
-                [ A1 MeList.map MeInt.toFloat
-                ]
-
-        newElements =
-            PipeLine
-                (VarName "startList")
-                [ MeList.sort
-                , A1
-                    MeList.map
-                    (F1 "n"
-                        (Infix (VarName "n") MeNumber.plus (MeFloat.init 0.5))
-                    )
-                , F1 "items"
-                    (Infix (MeFloat.init 0.5) MeList.cons (VarName "items"))
-                ]
-    in
-    F1 "lst" <|
-        LetIn
-            [ ( "startList", startList )
-            , ( "newElements", newElements )
-            ]
-            (PipeLine
-                (VarName "newElements")
-                [ A1 MeList.map MeList.singleton
-                , A1 MeList.map
-                    (F1 "x"
-                        (Infix (VarName "startList") MeList.append (VarName "x"))
-                    )
-                ]
-            )
-
-
-getPermutedLists : List Int -> List (List Float)
-getPermutedLists lst =
-    let
-        context =
-            [ ( "lst", MeList.initInts lst ) ]
-                |> Dict.fromList
-
-        toFloatList : Expr -> Result String (List Float)
-        toFloatList lstExpr =
-            lstExpr
-                |> MeRunTime.getFinalValue
-                |> MeList.toList MeFloat.toFloat
-    in
-    MeRunTime.compute context permutedLists
-        |> MeRunTime.getFinalValue
-        |> MeList.toList toFloatList
-        |> Result.withDefault []
-
-
-showLists : List a -> Html Msg
-showLists lists =
-    let
-        listItem lst =
-            lst
-                |> Debug.toString
-                |> Html.text
-                |> List.singleton
-                |> Html.li []
-    in
-    lists
-        |> List.map listItem
-        |> Html.ul []
-
-
-ranks : Expr
-ranks =
-    let
-        addOne =
-            F1
-                "n"
-                (Infix (VarName "n") MeNumber.plus (MeInt.init 1))
-    in
-    F1 "lst" <|
-        PipeLine
-            (VarName "lst")
-            [ A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortBy MeTuple.second
-            , A1 MeList.map MeTuple.first
-            , A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortBy MeTuple.second
-            , A1 MeList.map MeTuple.first
-            , A1 MeList.map addOne
-            ]
-
-
-getRanks : List Float -> List Int
-getRanks lst =
-    let
-        context =
-            [ ( "lst", MeList.initFloats lst ) ]
-                |> Dict.fromList
-    in
-    MeRunTime.compute context ranks
-        |> MeRunTime.getFinalValue
-        |> MeList.toListInts
-        |> Result.withDefault []
