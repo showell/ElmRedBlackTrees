@@ -42,6 +42,7 @@ pageSlug page =
 pageFromUrl : Url -> Maybe Page
 pageFromUrl url =
     let
+        parsePage : String -> Maybe Page
         parsePage frag =
             case frag of
                 "allfour" ->
@@ -67,6 +68,7 @@ pageFromUrl url =
                 _ ->
                     Nothing
 
+        parseTree : String -> Maybe Page
         parseTree frag =
             RangeList.fromSlug "tree" frag
                 |> Maybe.map Explorer
